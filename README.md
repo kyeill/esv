@@ -22,8 +22,8 @@ headings, Inter for the rest, gold for the plan (his pick of four mockups,
 2026-11-08). A quick sideways swipe switches tab on a phone.
 
 **Optional readings** (the plan's "Supplementary readings") are never called
-that on screen, at Kyle's request: they show a sage-green **\*** where the day
-number goes and sage text, and controls say "\* readings".
+that on screen, at Kyle's request: they show a brown **\*** where the day
+number goes and brown text. The Show / Hide switch has no label (his call).
 
 - **Next:** self-paced, no calendar. Left: the lowest-numbered unread day (its
   group, reading linked to esv.org, theme, a big ✓ button), then its \*
