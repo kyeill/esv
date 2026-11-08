@@ -3,7 +3,7 @@
 // cached copy is the fallback when there is not. Check marks live in the page's
 // localStorage and the Google Sheet, so requests to script.google.com (and the
 // esv.org links) pass straight through.
-const CACHE = "reading-plan-v2";
+const CACHE = "reading-plan-v3";
 const SHELL = ["./", "./plan.json", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 
 self.addEventListener("install", e => {
@@ -21,7 +21,10 @@ self.addEventListener("fetch", e => {
   const fresh = e.request.mode === "navigate" || u.pathname.endsWith("/plan.json");
   if (fresh) {
     const key = e.request.mode === "navigate" ? "./" : "./plan.json";
-    e.respondWith(fetch(e.request, {cache: "no-store"})
+    // Fetch by URL, not by e.request: a page-load request can't be re-issued
+    // with new options, so fetch(e.request, {...}) fails and every load would
+    // fall back to the copy cached at install.
+    e.respondWith(fetch(u.href, {cache: "no-store"})
       .then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(key, copy)); return r; })
       .catch(() => caches.match(key)));
     return;
