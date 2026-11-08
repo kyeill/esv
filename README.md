@@ -93,3 +93,8 @@ Local preview: the `esv` entry in the parent folder's `.claude/launch.json`
 - **esv.org shows long ranges a chapter at a time** (Song 1–8 opens on chapter 1
   and continues as you scroll), so the link is right even when the first screen
   looks short.
+- **The service worker must fetch the page by URL** (`fetch(u.href, …)`), not
+  `fetch(e.request, {…})`: a page-load request can't be re-issued with options,
+  so that form fails and every load quietly serves the copy cached at install.
+- **GitHub Pages' CDN can lag up to 10 minutes per edge** after a push; a
+  `curl` can see the new file while the browser still gets the old one.
