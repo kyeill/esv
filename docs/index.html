@@ -95,10 +95,9 @@ a.rd:hover,a.big-rd:hover{text-decoration:underline;text-decoration-thickness:1p
 .it.next-row{background:var(--accent-soft)}
 .it.next-row .tick{border-color:var(--accent)}
 @media (min-width:760px){
-  .list.wide .it{grid-template-columns:30px 64px minmax(170px,250px) 1fr 76px;grid-template-areas:"tick dn rd th when";align-items:center}
+  .list.wide .it{grid-template-columns:30px 64px minmax(170px,280px) 1fr 76px;grid-template-areas:"tick dn rd th when";align-items:center}
 }
-/* starred (*) optional readings: a brown * where the day number goes, brown text */
-.it.opt .dn{font:700 17px/1 var(--body);color:var(--opt)}
+/* optional (*) readings: no day number, brown text */
 .it.opt .rd{color:var(--opt)}
 .it.opt .th{color:var(--opt-dim)}
 .it.opt .tick{border-color:var(--opt-dim)}
@@ -196,8 +195,8 @@ function change(op) {
 function toggle(id) {
   const x = M.byId[id]; if (!x) return;
   const was = DONE[id];
-  change(was ? { op:"del", id } : { op:"set", id, date:today(), reading:(x.day ? `Day ${x.day}: ` : "* ") + x.reading });
-  if (!was) toast(`${x.day ? "Day " + x.day : x.reading} marked read`, () => change({ op:"del", id }));
+  change(was ? { op:"del", id } : { op:"set", id, date:today(), reading:(x.day ? `Day ${x.day}: ` : "* ") + x.label });
+  if (!was) toast(`${x.day ? "Day " + x.day : x.label} marked read`, () => change({ op:"del", id }));
   else toast(null);
 }
 let busy = false;
@@ -232,14 +231,14 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) sync
 setInterval(() => { if (!document.hidden) sync(); }, 120000);
 
 /* ---------- pieces ---------- */
-// one reading: ✓, "Day 14" (or a sage * for an optional reading), the passage
+// one reading: ✓, "Day 14" (blank for a brown optional reading), the passage
 // linked to esv.org, its theme, and the date it was marked read
 function row(x, extra = "") {
-  const done = isDone(x.id), label = x.day ? `Day ${x.day}` : x.reading;
+  const done = isDone(x.id), label = x.day ? `Day ${x.day}` : x.label;
   return `<li class="it${x.day ? "" : " opt"}${done ? " done" : ""}${extra}" id="r-${esc(x.id)}">
     <button class="tick" data-act="tick" data-id="${esc(x.id)}" aria-pressed="${done}" aria-label="${done ? "Un-mark" : "Mark"} ${esc(label)} read">✓</button>
-    <span class="dn"${x.day ? "" : ' title="Optional reading"'}>${x.day ? "Day " + x.day : "*"}</span>
-    <a class="rd" href="${esvUrl(x.q)}" target="_blank" rel="noopener">${esc(x.reading)}</a>
+    <span class="dn">${x.day ? "Day " + x.day : ""}</span>
+    <a class="rd" href="${esvUrl(x.q)}" target="_blank" rel="noopener">${esc(x.label)}</a>
     <span class="th" title="${esc(x.theme)}">${esc(x.theme)}</span>
     <span class="when">${done ? fmt(DONE[x.id]) : ""}</span></li>`;
 }
@@ -265,7 +264,7 @@ function vNext() {
   left += `<section class="next">
     <div class="kicker">Group ${nx.g.n} · ${esc(nx.g.title)}</div>
     <div class="dayno">Day ${nx.day}</div>
-    <a class="big-rd" href="${esvUrl(nx.q)}" target="_blank" rel="noopener">${esc(nx.reading)}<span class="go">Read in ESV ↗</span></a>
+    <a class="big-rd" href="${esvUrl(nx.q)}" target="_blank" rel="noopener">${esc(nx.label)}<span class="go">Read in ESV ↗</span></a>
     <p class="theme" title="${esc(nx.theme)}">${esc(nx.theme)}</p>
     <button class="mark" data-act="tick" data-id="${nx.id}">✓ Mark Day ${nx.day} read</button></section>`;
   const sups = ui.sup ? M.supsOf[nx.id] || [] : [];

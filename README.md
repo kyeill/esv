@@ -22,8 +22,13 @@ headings, Inter for the rest, gold for the plan (his pick of four mockups,
 2026-11-08). A quick sideways swipe switches tab on a phone.
 
 **Optional readings** (the plan's "Supplementary readings") are never called
-that on screen, at Kyle's request: they show a brown **\*** where the day
-number goes and brown text. The Show / Hide switch has no label (his call).
+that on screen, at Kyle's request: they are brown, with the day column left
+blank. The Show / Hide switch has no label (his call).
+
+**Book names** are spelled out when a reading is from one book ("Genesis 9;
+11", "Psalms 9–13"); a reading with an added psalm or several books keeps the
+plan's abbreviations ("Gen 1–2 + Ps 8"). `label()` in `tools/build_plan.py` does
+this; ids and esv.org links still come from the plan's own text.
 
 - **Next:** self-paced, no calendar. Left: the lowest-numbered unread day (its
   group, reading linked to esv.org, theme, a big ✓ button), then its \*
