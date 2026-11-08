@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reading Plan</title>
+<meta name="theme-color" content="#181d24">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Reading Plan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<style>
+/* One column, phone first: tabs pinned at the top, the open tab under them.
+   Dark all the time, same palette as Lift Log. */
+:root{
+  --bg:#181d24; --surface:#1d232b; --surface-2:#222932; --line:#2e3642;
+  --ink:#e7ebf0; --ink-2:#adb6c3; --ink-3:#7f8998;
+  --accent:#5aa2ff; --accent-ink:#0b1626; --accent-soft:#1c3552;
+  --good:#62c690; --warn:#e8ab4f; --warn-soft:#382b15; --bad:#ec8a76;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit}
+.app{max-width:560px;margin-inline:auto;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:8px;display:grid;gap:8px;justify-items:center}
+.screen{display:grid;gap:18px;align-content:start;padding-top:6px}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:999px;color:var(--ink-2);font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .16)}
+.seg.small button{padding:4px 11px;font-size:12.5px}
+.sync{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--warn-soft);color:var(--warn)}
+.sync.bad{background:var(--surface-2);color:var(--bad)}
+.empty{color:var(--ink-3);text-align:center;padding:40px 0}
+.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:0 0 6px}
+
+/* progress */
+.prog{display:grid;gap:6px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.prog-top b{font:700 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.prog-top span{font-size:12.5px;color:var(--ink-3);text-align:right}
+.bar{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:inherit}
+
+/* the next reading */
+.next{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:16px;display:grid;gap:10px}
+.kicker{font-size:12px;color:var(--ink-3);font-weight:600;line-height:1.3}
+.dayno{font:700 15px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.big-rd{font:700 32px/1.05 var(--display);text-decoration:none;display:inline-flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big-rd .go,.rd .go{font:600 12px var(--body);color:var(--accent);white-space:nowrap}
+.theme{margin:0;color:var(--ink-2)}
+.mark{border:0;border-radius:14px;height:50px;font-weight:700;font-size:16px;background:var(--accent);color:var(--accent-ink);margin-top:4px}
+.done-all{text-align:center;padding:28px 10px;display:grid;gap:6px}
+.done-all b{font:700 30px/1.1 var(--display)}
+
+/* reading rows: Plan, supplements and Coming up */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.it{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:start;padding:8px 4px;border-radius:12px}
+.it.next-row{background:var(--accent-soft)}
+.it.next-row .tick{border-color:var(--accent)}
+.tick{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:none;color:transparent;font-size:15px;font-weight:700;line-height:1;padding:0;margin-top:1px}
+.tick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.it-main{min-width:0;display:grid;gap:1px}
+.it-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.dn{font:700 14px/1.2 var(--display);color:var(--ink-3);letter-spacing:.03em;min-width:52px}
+.rd{font-weight:650;text-decoration:none}
+.th{font-size:13px;color:var(--ink-3);line-height:1.35}
+.when{font-size:11.5px;color:var(--ink-3);white-space:nowrap;padding-top:6px}
+.it.done .rd{color:var(--ink-2)}
+.it.sup{padding-left:18px;grid-template-columns:28px 1fr auto}
+.it.sup .tick{width:24px;height:24px;font-size:12px;margin-top:2px}
+.it.sup .rd{font-style:italic;font-weight:500}
+.it.sup .dn{min-width:0;font:600 10px/1.6 var(--body);letter-spacing:.06em;color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:0 5px}
+
+/* Plan: one collapsible card per group */
+.planbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--ink-3)}
+.grp{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.grp-h{width:100%;border:0;background:var(--surface);text-align:left;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.grp-h .t{font-weight:700;font-size:15px;line-height:1.25}
+.grp-h .n{color:var(--ink-3);font:700 14px var(--display);margin-right:6px}
+.grp-h .c{font:700 16px var(--display);color:var(--ink-2);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.grp-h .c.full{color:var(--good)}
+.grp-h .sub{font-size:12px;color:var(--ink-3)}
+.grp-h .bar{height:4px;grid-column:1 / -1;margin-top:4px}
+.grp-b{padding:6px 8px 10px}
+.blurb{font-size:13px;color:var(--ink-3);margin:6px 6px 10px;line-height:1.45}
+details.about{border-top:1px solid var(--line);padding-top:14px;color:var(--ink-2);font-size:13.5px}
+details.about summary{cursor:pointer;font-weight:600;color:var(--ink-2)}
+details.about p{margin:10px 0 0}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:20;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 10px 10px 16px;display:flex;gap:14px;align-items:center;font-size:14px;font-weight:600;box-shadow:0 6px 20px rgb(0 0 0 / .35);max-width:calc(100vw - 28px)}
+.toast[hidden]{display:none}
+.toast span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toast button{border:0;background:var(--bg);color:var(--accent);border-radius:10px;padding:7px 12px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top" id="top"></div>
+  <div class="screen" id="screen"></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* The plan itself is plan.json (built from plan.md by tools/build_plan.py).
+   Check marks live in a Google Sheet behind an Apps Script web app
+   (apps-script/ in the repo). This page keeps a copy in localStorage so it opens
+   instantly and works offline; changes queue up and are sent when there is a
+   connection. With no API set, check marks stay on this device only. */
+const API = "https://script.google.com/macros/s/AKfycbzzRbPGyNyGCCyjqh2poPMRuw1yAwJprIpi_GyINF_6cZPWsfzJ7KSz6iIcGDBNTeQZ/exec";
+
+/* ---------- storage ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+let DONE = store.get("esv:done", null);           // {id: "yyyy-mm-dd"} as the Sheet last sent it, plus local changes
+let PENDING = store.get("esv:pending", []);       // [{op, id, date, reading}] not yet acknowledged
+let PLAN = null;
+let syncState = "ok";                             // ok, offline or error
+const ui = { tab:"next", sup:store.get("esv:sup", true), open:null, scrolled:false };
+
+/* ---------- small helpers ---------- */
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const pad = n => String(n).padStart(2, "0");
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const fmt = s => { const [y, m, d] = s.split("-").map(Number); return `${MON[m - 1]} ${d}` + (y !== new Date().getFullYear() ? `, ${y}` : ""); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>");
+const esvUrl = q => "https://www.esv.org/" + encodeURI(q.replace(/; /g, ";").replace(/ /g, "+")) + "/";
+
+/* ---------- the model, built once from plan.json ---------- */
+let M;
+function model() {
+  const items = [], byId = {}, days = [];
+  PLAN.groups.forEach(g => {
+    let last = null;
+    g.items.forEach(it => {
+      const x = { ...it, g, after:null };
+      if (x.day) { last = x; days.push(x); } else x.after = last;   // a supplement follows the day before it
+      items.push(x); byId[x.id] = x;
+    });
+  });
+  days.sort((a, b) => a.day - b.day);
+  const supsOf = {};
+  items.forEach(x => { if (!x.day && x.after) (supsOf[x.after.id] ||= []).push(x); });
+  M = { items, byId, days, supsOf, nSup:items.length - days.length };
+}
+const isDone = id => !!DONE[id];
+const nextDay = () => M.days.find(d => !isDone(d.id)) || null;
+
+/* ---------- changes and sync ---------- */
+function applyLocal(op) {
+  if (op.op === "del") delete DONE[op.id]; else DONE[op.id] = op.date;
+}
+function change(op) {
+  PENDING = PENDING.filter(p => p.id !== op.id);   // one op per reading
+  PENDING.push(op);
+  applyLocal(op);
+  store.set("esv:pending", PENDING); store.set("esv:done", DONE);
+  render(); clearTimeout(change.t); change.t = setTimeout(sync, 700);
+}
+function toggle(id) {
+  const x = M.byId[id]; if (!x) return;
+  const was = DONE[id];
+  change(was ? { op:"del", id } : { op:"set", id, date:today(), reading:(x.day ? `Day ${x.day}: ` : "S: ") + x.reading });
+  if (!was) toast(`${x.day ? "Day " + x.day : x.reading} marked read`, () => change({ op:"del", id }));
+  else toast(null);
+}
+let busy = false;
+async function sync() {
+  if (!API || busy) return;
+  busy = true;
+  const sent = PENDING.slice();
+  try {
+    const r = sent.length
+      ? await fetch(API, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify({ ops:sent }) })
+      : await fetch(API + "?t=" + Date.now());
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || "not ok");
+    PENDING = PENDING.filter(p => !sent.includes(p));   // anything changed meanwhile stays queued
+    store.set("esv:pending", PENDING);
+    DONE = Object.fromEntries(j.done.map(d => [d.id, d.date || today()]));
+    PENDING.forEach(applyLocal);
+    store.set("esv:done", DONE);
+    syncState = "ok";
+  } catch (err) {
+    syncState = navigator.onLine ? "error" : "offline";
+  }
+  busy = false;
+  render();
+  if (PENDING.length && syncState === "ok") sync();
+}
+["online", "focus", "pageshow"].forEach(ev => addEventListener(ev, sync));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
+setInterval(() => { if (!document.hidden) sync(); }, 120000);
+
+/* ---------- pieces ---------- */
+function row(x, extra = "") {
+  const done = isDone(x.id), label = x.day ? `Day ${x.day}` : x.reading;
+  return `<li class="it${x.day ? "" : " sup"}${done ? " done" : ""}${extra}" id="r-${esc(x.id)}">
+    <button class="tick" data-act="tick" data-id="${esc(x.id)}" aria-pressed="${done}" aria-label="${done ? "Un-mark" : "Mark"} ${esc(label)} read">✓</button>
+    <div class="it-main"><div class="it-head"><span class="dn">${x.day ? "Day " + x.day : "S"}</span>
+      <a class="rd" href="${esvUrl(x.q)}" target="_blank" rel="noopener">${esc(x.reading)}</a></div>
+      <div class="th">${esc(x.theme)}</div></div>
+    <span class="when">${done ? fmt(DONE[x.id]) : ""}</span></li>`;
+}
+function progress() {
+  const d = M.days.filter(x => isDone(x.id)).length, s = M.items.filter(x => !x.day && isDone(x.id)).length;
+  const nx = nextDay();
+  return `<div class="prog"><div class="prog-top"><b>${nx ? `Day ${nx.day} of 365` : "Finished"}</b>
+    <span>${d} of 365 read${ui.sup ? ` · ${s} of ${M.nSup} supplements` : ""}</span></div>
+    <div class="bar"><i style="width:${(d / 365 * 100).toFixed(1)}%"></i></div></div>`;
+}
+
+/* ---------- Next: the first unread day, its supplements, and what follows ---------- */
+function vNext() {
+  const nx = nextDay();
+  if (!nx) return progress() + `<div class="done-all"><b>You've read the whole plan</b><span class="th">All 365 days are marked read.</span></div>`;
+  let html = progress();
+  // supplements left open on the day just before, so marking a day first doesn't hide them
+  const prev = M.days.find(d => d.day === nx.day - 1);
+  const leftover = ui.sup && prev ? (M.supsOf[prev.id] || []).filter(x => !isDone(x.id)) : [];
+  if (leftover.length) html += `<section><p class="label">Still open from Day ${prev.day}</p><ol class="list">${leftover.map(x => row(x)).join("")}</ol></section>`;
+  html += `<section class="next">
+    <div class="kicker">Group ${nx.g.n} · ${esc(nx.g.title)}</div>
+    <div class="dayno">Day ${nx.day}</div>
+    <a class="big-rd" href="${esvUrl(nx.q)}" target="_blank" rel="noopener">${esc(nx.reading)}<span class="go">Read in ESV ↗</span></a>
+    <p class="theme">${esc(nx.theme)}</p>
+    <button class="mark" data-act="tick" data-id="${nx.id}">✓ Mark Day ${nx.day} read</button></section>`;
+  const sups = ui.sup ? M.supsOf[nx.id] || [] : [];
+  if (sups.length) html += `<section><p class="label">Optional supplements</p><ol class="list">${sups.map(x => row(x)).join("")}</ol></section>`;
+  const soon = M.days.filter(d => d.day > nx.day && !isDone(d.id)).slice(0, 3);
+  if (soon.length) html += `<section><p class="label">Coming up</p><ol class="list">${soon.map(x => row(x)).join("")}</ol></section>`;
+  return html;
+}
+
+/* ---------- Plan: every group, the one holding the next day open ---------- */
+function vPlan() {
+  const nx = nextDay();
+  if (!ui.open) ui.open = new Set([nx ? nx.g.n : 1]);
+  const groups = PLAN.groups.map(g => {
+    const its = M.items.filter(x => x.g === g), ds = its.filter(x => x.day), n = ds.filter(x => isDone(x.id)).length;
+    const open = ui.open.has(g.n);
+    const shown = ui.sup ? its : ds;
+    return `<section class="grp"><button class="grp-h" data-act="grp" data-v="${g.n}" aria-expanded="${open}">
+        <span class="t"><span class="n">${g.n}</span>${esc(g.title)}</span>
+        <span class="c${n === ds.length ? " full" : ""}">${n === ds.length ? "✓ " : ""}${n}/${ds.length}</span>
+        <span class="sub">Days ${g.from}–${g.to}</span>
+        <span class="bar"><i style="width:${(n / ds.length * 100).toFixed(1)}%"></i></span></button>
+      ${open ? `<div class="grp-b"><p class="blurb">${esc(g.blurb)}</p><ol class="list">${shown.map(x => row(x, nx && x.id === nx.id ? " next-row" : "")).join("")}</ol></div>` : ""}</section>`;
+  }).join("");
+  return progress() + `<div class="planbar"><span>Supplements</span><div class="seg small" role="group">
+      <button data-act="sup" data-v="1" aria-pressed="${ui.sup}">Show</button><button data-act="sup" data-v="0" aria-pressed="${!ui.sup}">Hide</button></div></div>`
+    + groups
+    + `<details class="about"><summary>About this plan</summary>${PLAN.about.map(p => `<p>${md(p)}</p>`).join("")}</details>`;
+}
+
+/* ---------- render ---------- */
+const $top = document.getElementById("top"), $screen = document.getElementById("screen");
+function render() {
+  const waiting = PENDING.length ? ` · ${PENDING.length} to save` : "";
+  const badge = syncState === "offline" ? `<span class="sync">Offline${waiting}</span>`
+    : syncState === "error" ? `<span class="sync bad">Couldn't reach the Sheet${waiting}</span>` : "";
+  $top.innerHTML = `<div class="seg" role="group"><button data-act="tab" data-v="next" aria-pressed="${ui.tab === "next"}">Next</button><button data-act="tab" data-v="plan" aria-pressed="${ui.tab === "plan"}">Plan</button></div>` + badge;
+  if (!PLAN || !DONE) {
+    $screen.innerHTML = `<p class="empty">${PLAN === false ? "Couldn't load the plan. Check your connection." : syncState === "ok" ? "Loading…" : "Couldn't load your progress. Check your connection."}</p>`;
+    return;
+  }
+  $screen.innerHTML = ui.tab === "plan" ? vPlan() : vNext();
+  // first time on Plan: bring the next day into view
+  if (ui.tab === "plan" && !ui.scrolled) {
+    ui.scrolled = true;
+    const nx = nextDay(), el = nx && document.getElementById("r-" + nx.id);
+    if (el) el.scrollIntoView({ block:"center" });
+  }
+}
+function go(tab) { ui.tab = tab; ui.scrolled = false; scrollTo(0, 0); toast(null); render(); }
+
+/* toast with Undo after marking something read */
+const $toast = document.getElementById("toast");
+function toast(text, undo) {
+  clearTimeout(toast.t);
+  if (!text) { $toast.hidden = true; return; }
+  $toast.innerHTML = `<span>${esc(text)}</span><button type="button">Undo</button>`;
+  $toast.querySelector("button").onclick = () => { toast(null); undo(); };
+  $toast.hidden = false;
+  toast.t = setTimeout(() => { $toast.hidden = true; }, 6000);
+}
+
+document.addEventListener("click", ev => {
+  const el = ev.target.closest("[data-act]"); if (!el) return;
+  const { act, id, v } = el.dataset;
+  switch (act) {
+    case "tab": return go(v);
+    case "tick": return toggle(id);
+    case "sup": ui.sup = v === "1"; store.set("esv:sup", ui.sup); break;
+    case "grp": { const n = +v; ui.open.has(n) ? ui.open.delete(n) : ui.open.add(n); break; }
+  }
+  render();
+});
+
+/* swipe sideways to switch tab: a quick stroke, mostly across */
+let touch = null;
+document.addEventListener("touchstart", ev => {
+  touch = ev.touches.length === 1 ? { x:ev.touches[0].clientX, y:ev.touches[0].clientY, t:Date.now() } : null;
+}, { passive:true });
+document.addEventListener("touchend", ev => {
+  if (!touch || !PLAN) return;
+  const p = ev.changedTouches[0], dx = p.clientX - touch.x, dy = p.clientY - touch.y, quick = Date.now() - touch.t < 700;
+  touch = null;
+  if (!quick || Math.abs(dx) < 60 || Math.abs(dx) < 2 * Math.abs(dy)) return;
+  if (dx < 0 && ui.tab === "next") go("plan");
+  else if (dx > 0 && ui.tab === "plan") go("next");
+}, { passive:true });
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+if (!API && !DONE) DONE = {};      // no Sheet yet: start empty on this device
+render();
+fetch("plan.json").then(r => r.json()).then(p => { PLAN = p; model(); render(); })
+  .catch(() => { PLAN = false; render(); });
+sync().then(() => { if (!DONE && syncState === "ok") { DONE = {}; render(); } });
+</script>
+</body>
+</html>
