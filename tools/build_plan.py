@@ -85,6 +85,19 @@ def label(reading):
     return f"{name} {rest}".strip()
 
 
+def books_of(reading):
+    """Abbreviations of the books a reading touches: 'Ex 40; Lev 10' -> ['Ex', 'Lev']."""
+    return [m.group(1) for seg in re.split(r"\s*\+\s*|\s*;\s*", reading) if (m := BOOK_RE.match(seg))]
+
+
+def book_list(readings):
+    """Full names in Bible order, Psalms plural: ['Genesis', 'Job']. A psalm
+    tacked on with '+' ('Acts 1–2 + Ps 16') doesn't count, or Psalms would head
+    the list for the early church."""
+    got = {b for r in readings for b in books_of(r.split("+")[0])}
+    return ["Psalms" if b == "Ps" else BOOKS[b] for b in BOOKS if b in got]
+
+
 def main():
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "plan.md"
     lines = src.read_text(encoding="utf-8").splitlines()
@@ -134,6 +147,12 @@ def main():
             problems.append(f"group {g['n']} heading says days {g['from']}-{g['to']}, rows say {min(got)}-{max(got)}")
     if problems:
         sys.exit("build_plan: " + "; ".join(problems))
+
+    # what each group card lists under its title: every book it touches, and
+    # the books of its plan days alone (for when the optional readings are hidden)
+    for g in groups:
+        g["books"] = book_list(it["reading"] for it in g["items"])
+        g["dayBooks"] = book_list(it["reading"] for it in g["items"] if it["day"] is not None)
 
     plan = {"title": title, "about": about, "groups": groups}
     out = ROOT / "docs" / "plan.json"

@@ -18,12 +18,19 @@ phone's home screen to use it like an app.
 
 Tabs **Next · Plan**. Built for desktop first (Kyle's main screen, up to 1080px
 wide), still fine on a phone. Warm dark, Source Serif 4 for readings and
-headings, Inter for the rest, gold for the plan (his pick of four mockups,
-2026-11-08). A quick sideways swipe switches tab on a phone.
+headings, Inter for the rest, gold for buttons and progress (his pick of four
+mockups, 2026-11-08). Plan days are **brown** (passage, circle, fill) because
+that stands out most; optional readings are plain grey. A quick sideways swipe
+switches tab on a phone.
 
 **Optional readings** (the plan's "Supplementary readings") are never called
-that on screen, at Kyle's request: they are brown, with the day column left
+that on screen, at Kyle's request: plain grey rows with the day column left
 blank. The Show / Hide switch has no label (his call).
+
+**Group cards** list the books in the group (Bible order) under the title, in
+place of the plan's group descriptions, which the app no longer shows. A psalm
+added with "+" doesn't count; with optional readings hidden, books found only
+in them drop out (`books` / `dayBooks` from `tools/build_plan.py`).
 
 **Book names** are spelled out when a reading is from one book ("Genesis 9;
 11", "Psalms 9–13"); a reading with an added psalm or several books keeps the
