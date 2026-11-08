@@ -103,3 +103,5 @@ Local preview: the `esv` entry in the parent folder's `.claude/launch.json`
   so that form fails and every load quietly serves the copy cached at install.
 - **GitHub Pages' CDN can lag up to 10 minutes per edge** after a push; a
   `curl` can see the new file while the browser still gets the old one.
+- **Themes are one line, always** (cut with "…", full text on hover). Kyle plans
+  to shorten many of them in `plan.md`; nothing in the app needs changing for that.
