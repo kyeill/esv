@@ -241,9 +241,12 @@ function row(x, extra = "") {
     <button class="tick" data-act="tick" data-id="${esc(x.id)}" aria-pressed="${done}" aria-label="${done ? "Un-mark" : "Mark"} ${esc(label)} read">✓</button>
     <span class="dn">${x.day ? "Day " + x.day : ""}</span>
     <a class="rd" href="${esvUrl(x.q)}" target="_blank" rel="noopener">${esc(x.label)}</a>
-    <span class="th" title="${esc(x.theme)}">${esc(x.theme)}</span>
+    <span class="th" title="${esc(tip(x))}">${esc(x.theme)}</span>
     <span class="when">${done ? fmt(DONE[x.id]) : ""}</span></li>`;
 }
+// hover text for a theme: the theme itself, then the first draft's note
+// (its WCF references and cross-references), which the app keeps out of sight
+const tip = x => x.note && x.note !== x.theme ? `${x.theme}\n\nOriginal note: ${x.note}` : x.theme;
 const list = (xs, wide) => `<ol class="list${wide ? " wide" : ""}">${xs.join("")}</ol>`;
 const STAR = `<span class="star">*</span>`;
 function progress() {
@@ -267,7 +270,7 @@ function vNext() {
     <div class="kicker">Group ${nx.g.n} · ${esc(nx.g.title)}</div>
     <div class="dayno">Day ${nx.day}</div>
     <a class="big-rd" href="${esvUrl(nx.q)}" target="_blank" rel="noopener">${esc(nx.label)}<span class="go">Read in ESV ↗</span></a>
-    <p class="theme" title="${esc(nx.theme)}">${esc(nx.theme)}</p>
+    <p class="theme" title="${esc(tip(nx))}">${esc(nx.theme)}</p>
     <button class="mark" data-act="tick" data-id="${nx.id}">✓ Mark Day ${nx.day} read</button></section>`;
   const sups = ui.sup ? M.supsOf[nx.id] || [] : [];
   if (sups.length) left += `<section><p class="label">${STAR} With this day</p>${list(sups.map(x => row(x)))}</section>`;

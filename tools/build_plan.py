@@ -39,7 +39,8 @@ BOOKS = {
 }
 BOOK_RE = re.compile(r"^(" + "|".join(sorted(map(re.escape, BOOKS), key=len, reverse=True)) + r")\b\s*(.*)$")
 GROUP_RE = re.compile(r"^## Group (\d+): (.*?) \(Days (\d+)[–-](\d+)\)\s*$")
-ROW_RE = re.compile(r"^\| ☐ \| (\d+|S) \| (.*?) \| (.*) \|\s*$")
+# | ☐ | Day | Reading | Theme | Note |   (Note optional: the first draft's theme)
+ROW_RE = re.compile(r"^\| ☐ \| (\d+|S) \| (.*?) \| (.*?) \|(?: (.*?) \|)?\s*$")
 
 
 def esv_query(reading):
@@ -121,13 +122,17 @@ def main():
         m = ROW_RE.match(line)
         if m:
             day, reading, theme = m.group(1), m.group(2).strip(), m.group(3).strip()
+            note = (m.group(4) or "").strip()
             sup = day == "S"
             reading = reading.strip("*") if sup else reading
-            cur["items"].append({
+            it = {
                 "id": f"s:{reading}" if sup else f"d{day}",
                 "day": None if sup else int(day),
                 "reading": reading, "label": label(reading), "theme": theme, "q": esv_query(reading),
-            })
+            }
+            if note:
+                it["note"] = note
+            cur["items"].append(it)
         elif line.strip() and not line.startswith("|") and not cur["items"]:
             cur["blurb"] = (cur["blurb"] + " " + line.strip()).strip()
 

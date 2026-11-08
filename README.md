@@ -7,7 +7,7 @@ phone's home screen to use it like an app.
 
 | Path | What it is |
 |------|------------|
-| `plan.md` | the plan itself (copy of `My Drive\365-day-chronological-bible-plan.md`) |
+| `plan.md` | the plan itself, **the master copy** (started from `My Drive\365-day-chronological-bible-plan.md`, which is now out of date) |
 | `tools/build_plan.py` | turns `plan.md` into `docs/plan.json`; refuses a draft with missing or repeated days |
 | `docs/index.html` | the whole app, hand-written, no build step; Pages serves `docs/` from `main` |
 | `docs/manifest.webmanifest`, `docs/sw.js` | make it installable and open offline |
@@ -50,7 +50,10 @@ this; ids and esv.org links still come from the plan's own text.
 
 ## Updating the plan
 
-1. Replace `plan.md` with the new draft.
+1. Edit `plan.md`. Rows are `| ☐ | Day | Reading | Theme | Note |`: Theme is
+   the one-line summary on screen (written 2026-11-08 to say what each passage
+   contains; keep it under ~65 characters); Note is the first draft's theme,
+   with its WCF and cross-references, shown only on hover.
 2. `python tools/build_plan.py` (it stops with the reason if a day is missing,
    repeated, or a book abbreviation is new — add it to `BOOKS`).
 3. Push. `plan.json` is fetched fresh whenever there is a connection.
@@ -115,5 +118,6 @@ Local preview: the `esv` entry in the parent folder's `.claude/launch.json`
   so that form fails and every load quietly serves the copy cached at install.
 - **GitHub Pages' CDN can lag up to 10 minutes per edge** after a push; a
   `curl` can see the new file while the browser still gets the old one.
-- **Themes are one line, always** (cut with "…", full text on hover). Kyle plans
-  to shorten many of them in `plan.md`; nothing in the app needs changing for that.
+- **Themes are one line, always** (cut with "…", full text on hover). All 533
+  fit at 1280px wide; 9 are cut at 1024px. Add-on psalms ("+ Ps 8") are left
+  out of the theme on purpose (Kyle's call).
