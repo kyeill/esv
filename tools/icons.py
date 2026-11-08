@@ -1,4 +1,4 @@
-"""Draw the app icons into docs/: a white open book on blue.
+"""Draw the app icons into docs/: a dark open book on gold.
 
 Run by hand when the mark changes (needs Pillow), then bump CACHE in docs/sw.js.
   icon-192.png, icon-512.png  full-bleed, purpose "any maskable": the mark stays
@@ -11,7 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 DOCS = Path(__file__).resolve().parent.parent / "docs"
-BLUE, WHITE = (35, 80, 196, 255), (255, 255, 255, 255)
+GOLD, INK, WHITE = (214, 167, 86, 255), (27, 25, 22, 255), (255, 255, 255, 255)
 
 
 def book(draw, size, scale, fg, bg):
@@ -32,7 +32,7 @@ def icon(size, scale, bg, fg, name):
     img.resize((size, size), Image.LANCZOS).save(DOCS / name)
 
 
-icon(192, 1.0, BLUE, WHITE, "icon-192.png")
-icon(512, 1.0, BLUE, WHITE, "icon-512.png")
-icon(180, 1.25, BLUE, WHITE, "icon-180.png")
+icon(192, 1.0, GOLD, INK, "icon-192.png")
+icon(512, 1.0, GOLD, INK, "icon-512.png")
+icon(180, 1.25, GOLD, INK, "icon-180.png")
 icon(512, 1.0, (0, 0, 0, 0), WHITE, "icon-mono-512.png")

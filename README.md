@@ -16,19 +16,24 @@ phone's home screen to use it like an app.
 
 ## The app
 
-Tabs **Next · Plan**. Always dark, same palette as Lift Log. A quick sideways
-swipe switches tab.
+Tabs **Next · Plan**. Built for desktop first (Kyle's main screen, up to 1080px
+wide), still fine on a phone. Warm dark, Source Serif 4 for readings and
+headings, Inter for the rest, gold for the plan (his pick of four mockups,
+2026-11-08). A quick sideways swipe switches tab on a phone.
 
-- **Next:** self-paced, no calendar. Shows the lowest-numbered unread day: its
-  group, reading (tap to open on esv.org), theme and a big ✓ button. Below it
-  the optional supplements that follow that day in the plan, then the next three
-  unread days. Supplements left unread on the day before stay at the top under
-  "Still open from Day N", so marking the day first doesn't hide them. Marking
-  something read shows an Undo for 6 seconds.
+**Optional readings** (the plan's "Supplementary readings") are never called
+that on screen, at Kyle's request: they show a sage-green **\*** where the day
+number goes and sage text, and controls say "\* readings".
+
+- **Next:** self-paced, no calendar. Left: the lowest-numbered unread day (its
+  group, reading linked to esv.org, theme, a big ✓ button), then its \*
+  readings. Right: the next five unread days. \* readings left unread on the day
+  before stay at the top, so marking the day first doesn't hide them. Marking
+  something read shows an Undo for 6 seconds. One column on a phone.
 - **Plan:** one card per group with a count and bar; the group holding the
-  next day opens and scrolls to it. Every row has a ✓ (tap again to un-mark) and
-  the date it was marked. Show / Hide supplements applies to both tabs and is
-  remembered on the device. "About this plan" at the bottom is the plan's
+  next day opens and scrolls to it. On a wide screen each row is one line: ✓,
+  day, reading, theme, date marked. Show / Hide \* readings applies to both tabs
+  and is remembered on the device. "About this plan" at the bottom is the plan's
   "How the plan is built" section.
 
 ## Updating the plan
