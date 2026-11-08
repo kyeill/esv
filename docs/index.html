@@ -197,6 +197,9 @@ async function sync() {
     syncState = "ok";
   } catch (err) {
     syncState = navigator.onLine ? "error" : "offline";
+    // first visit on this device and no Sheet: show the plan anyway; anything
+    // marked now stays queued and is merged in once the Sheet answers
+    if (!DONE) DONE = {};
   }
   busy = false;
   render();
@@ -275,7 +278,7 @@ function render() {
     : syncState === "error" ? `<span class="sync bad">Couldn't reach the Sheet${waiting}</span>` : "";
   $top.innerHTML = `<div class="seg" role="group"><button data-act="tab" data-v="next" aria-pressed="${ui.tab === "next"}">Next</button><button data-act="tab" data-v="plan" aria-pressed="${ui.tab === "plan"}">Plan</button></div>` + badge;
   if (!PLAN || !DONE) {
-    $screen.innerHTML = `<p class="empty">${PLAN === false ? "Couldn't load the plan. Check your connection." : syncState === "ok" ? "Loading…" : "Couldn't load your progress. Check your connection."}</p>`;
+    $screen.innerHTML = `<p class="empty">${PLAN === false ? "Couldn't load the plan. Check your connection." : "Loading…"}</p>`;
     return;
   }
   $screen.innerHTML = ui.tab === "plan" ? vPlan() : vNext();
