@@ -42,11 +42,11 @@ this; ids and esv.org links still come from the plan's own text.
   readings. Right: the next five unread days. \* readings left unread on the day
   before stay at the top, so marking the day first doesn't hide them. Marking
   something read shows an Undo for 6 seconds. One column on a phone.
-- **Plan:** one card per group with a count and bar; the group holding the
-  next day opens and scrolls to it. On a wide screen each row is one line: ✓,
+- **Plan:** one card per group with a count and bar, all collapsed whenever the tab opens (his call). The
+  next day's row is highlighted. On a wide screen each row is one line: ✓,
   day, reading, theme, date marked. Show / Hide \* readings applies to both tabs
-  and is remembered on the device. "About this plan" at the bottom is the plan's
-  "How the plan is built" section.
+  and is remembered on the device. No footer: the "About this plan" section was
+  removed at his request (the text is still in `plan.md`).
 
 ## Updating the plan
 

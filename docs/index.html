@@ -118,9 +118,6 @@ a.rd:hover,a.big-rd:hover{text-decoration:underline;text-decoration-thickness:1p
 .grp-h .days{font-size:12.5px;color:var(--ink-3);text-align:right;white-space:nowrap;align-self:start}
 .grp-h .bar{height:4px;grid-column:1 / -1;margin-top:4px}
 .grp-b{padding:4px 10px 10px}
-details.about{border-top:1px solid var(--line);padding-top:14px;color:var(--ink-2);font-size:14px;max-width:85ch}
-details.about summary{cursor:pointer;font-weight:600;color:var(--ink-2)}
-details.about p{margin:10px 0 0}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:20;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 10px 10px 16px;display:flex;gap:14px;align-items:center;font-size:14px;font-weight:600;box-shadow:0 6px 20px rgb(0 0 0 / .4);max-width:calc(100vw - 28px)}
 .toast[hidden]{display:none}
@@ -152,7 +149,7 @@ let DONE = store.get("esv:done", null);           // {id: "yyyy-mm-dd"} as the S
 let PENDING = store.get("esv:pending", []);       // [{op, id, date, reading}] not yet acknowledged
 let PLAN = null;
 let syncState = "ok";                             // ok, offline or error
-const ui = { tab:"next", sup:store.get("esv:sup", true), open:null, scrolled:false };
+const ui = { tab:"next", sup:store.get("esv:sup", true), open:new Set() };
 
 /* ---------- small helpers ---------- */
 const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -160,7 +157,6 @@ const pad = n => String(n).padStart(2, "0");
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
 const fmt = s => { const [y, m, d] = s.split("-").map(Number); return `${MON[m - 1]} ${d}` + (y !== new Date().getFullYear() ? `, ${y}` : ""); };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>");
 const esvUrl = q => "https://www.esv.org/" + encodeURI(q.replace(/; /g, ";").replace(/ /g, "+")) + "/";
 
 /* ---------- the model, built once from plan.json ---------- */
@@ -282,7 +278,6 @@ function vNext() {
 /* ---------- Plan: every group, the one holding the next day open ---------- */
 function vPlan() {
   const nx = nextDay();
-  if (!ui.open) ui.open = new Set([nx ? nx.g.n : 1]);
   const groups = PLAN.groups.map(g => {
     const its = M.items.filter(x => x.g === g), ds = its.filter(x => x.day), n = ds.filter(x => isDone(x.id)).length;
     const open = ui.open.has(g.n);
@@ -297,8 +292,7 @@ function vPlan() {
   }).join("");
   return progress() + `<div class="planbar"><div class="seg small" role="group" aria-label="Optional (*) readings">
       <button data-act="sup" data-v="1" aria-pressed="${ui.sup}">Show</button><button data-act="sup" data-v="0" aria-pressed="${!ui.sup}">Hide</button></div></div>`
-    + groups
-    + `<details class="about"><summary>About this plan</summary>${PLAN.about.map(p => `<p>${md(p)}</p>`).join("")}</details>`;
+    + groups;
 }
 
 /* ---------- render ---------- */
@@ -313,14 +307,9 @@ function render() {
     return;
   }
   $screen.innerHTML = ui.tab === "plan" ? vPlan() : vNext();
-  // first time on Plan: bring the next day into view
-  if (ui.tab === "plan" && !ui.scrolled) {
-    ui.scrolled = true;
-    const nx = nextDay(), el = nx && document.getElementById("r-" + nx.id);
-    if (el) el.scrollIntoView({ block:"center" });
-  }
 }
-function go(tab) { ui.tab = tab; ui.scrolled = false; scrollTo(0, 0); toast(null); render(); }
+// Plan always opens with every group collapsed (Kyle's call)
+function go(tab) { ui.tab = tab; if (tab === "plan") ui.open = new Set(); scrollTo(0, 0); toast(null); render(); }
 
 /* toast with Undo after marking something read */
 const $toast = document.getElementById("toast");
