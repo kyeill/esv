@@ -70,20 +70,22 @@ def esv_query(reading):
 
 
 def label(reading):
-    """What the app shows. A reading from one book is spelled out
-    ('Gen 9; 11' -> 'Genesis 9; 11'); one with an added psalm or several books
-    keeps the plan's abbreviations ('Gen 1–2 + Ps 8', 'Ex 40; Lev 10')."""
-    if "+" in reading:
-        return reading
-    books = {m.group(1) for seg in re.split(r"\s*;\s*", reading) if (m := BOOK_RE.match(seg))}
+    """What the app shows. When the main reading is from one book, that book is
+    spelled out, and an added psalm keeps its short form ('Gen 9; 11' ->
+    'Genesis 9; 11', 'Gen 1–2 + Ps 8' -> 'Genesis 1–2 + Ps 8'). Several books
+    keep the plan's abbreviations ('Ex 40; Lev 10', 'Matt 1; Luke 2')."""
+    main, plus, extra = reading.partition("+")
+    main = main.strip()
+    books = {m.group(1) for seg in re.split(r"\s*;\s*", main) if (m := BOOK_RE.match(seg))}
     if len(books) != 1:
         return reading
     abbr = books.pop()
-    m = BOOK_RE.match(reading)
+    m = BOOK_RE.match(main)
     name, rest = BOOKS[abbr], m.group(2)
     if abbr == "Ps" and re.search(r"[–;,-]", rest):
         name = "Psalms"                 # Ps 9–13 -> Psalms 9–13, Ps 15 -> Psalm 15
-    return f"{name} {rest}".strip()
+    out = f"{name} {rest}".strip()
+    return f"{out} + {extra.strip()}" if plus else out
 
 
 def books_of(reading):

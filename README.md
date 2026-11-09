@@ -33,8 +33,8 @@ added with "+" doesn't count; with optional readings hidden, books found only
 in them drop out (`books` / `dayBooks` from `tools/build_plan.py`).
 
 **Book names** are spelled out when a reading is from one book ("Genesis 9;
-11", "Psalms 9–13"); a reading with an added psalm or several books keeps the
-plan's abbreviations ("Gen 1–2 + Ps 8"). `label()` in `tools/build_plan.py` does
+11", "Psalms 9–13"), also before an added psalm ("Genesis 1–2 + Ps 8"); several
+books keep the plan's abbreviations ("Ex 40; Lev 10"). `label()` in `tools/build_plan.py` does
 this; ids and esv.org links still come from the plan's own text.
 
 - **Next:** self-paced, no calendar. Left: the lowest-numbered unread day (its
