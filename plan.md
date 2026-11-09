@@ -16,20 +16,20 @@ WCF (Westminster Confession of Faith) and WSC (Westminster Shorter Catechism) no
 
 | Group | Plan days | Supplementary readings | Contents |
 |---|---|---|---|---|
-| 1 | 1–25 (25) | 10 (42 chapters) | Beginnings: Creation to Joseph |
-| 2 | 26–61 (36) | 21 (115 chapters) | From Egypt to the Promised Land: Moses, Joshua, Judges, Ruth |
-| 3 | 62–94 (33) | 33 (150 chapters) | The United Kingdom: Samuel, Saul, David, and Solomon |
-| 4 | 95–131 (37) | 36 (104 chapters) | The Divided Kingdom and the Assyrian Age (931–c. 630 BC) |
-| 5 | 132–170 (39) | 41 (150 chapters) | Jeremiah, the Exile, and the Return (627–430 BC) |
-| 6 | 171–194 (24) | 15 (16 chapters) | The Life of Christ I: Birth to the Feast of Booths |
-| 7 | 195–219 (25) | 11 (12 chapters) | The Life of Christ II: Toward Jerusalem, the Cross, and the Empty Tomb |
-| 8 | 220–246 (27) | none | The Church Begins: Acts 1–18, James, Galatians, 1–2 Thessalonians |
-| 9 | 247–276 (30) | none | Ephesus and Corinth: Acts 19–20, 1–2 Corinthians |
-| 10 | 277–307 (31) | none | Romans and the Prison Letters |
-| 11 | 308–338 (31) | none | Philippians, 1 Timothy, Titus, 1 Peter, and Hebrews |
-| 12 | 339–365 (27) | none | Last Words: 2 Timothy, 2 Peter, Jude, John's Letters, and Revelation |
+| 1 | 1–25 (25) | 10 (42 chapters) | Primeval History & Patriarchal Narratives |
+| 2 | 26–61 (36) | 21 (115 chapters) | Mosaic Era & Rule of Judges |
+| 3 | 62–94 (33) | 33 (150 chapters) | United Monarchy |
+| 4 | 95–131 (37) | 36 (104 chapters) | Divided Monarchy & Assyrian Age |
+| 5 | 132–170 (39) | 41 (150 chapters) | Exile & Restoration |
+| 6 | 171–194 (24) | 15 (16 chapters) | Early Life & Ministry of Jesus |
+| 7 | 195–219 (25) | 11 (12 chapters) | Later Ministry, Death & Resurrection of Jesus |
+| 8 | 220–246 (27) | none | Early Church & First Missionary Journeys |
+| 9 | 247–276 (30) | none | Letters to Corinth |
+| 10 | 277–307 (31) | none | Letter to Rome & Prison Letters |
+| 11 | 308–338 (31) | none | Pastoral & General Letters |
+| 12 | 339–365 (27) | none | Final Letters & Revelation |
 
-## Group 1: Beginnings: Creation to Joseph (Days 1–25)
+## Group 1: Primeval History & Patriarchal Narratives (Days 1–25)
 
 The covenant of works, the fall, and the first gospel promise; God's covenant with Abraham carried through Isaac, Jacob, and Judah. Job is placed after Babel because its setting (wealth in livestock, Job offering sacrifices as head of household, long lifespan) fits the patriarchal age.
 
@@ -71,7 +71,7 @@ The covenant of works, the fall, and the first gospel promise; God's covenant wi
 | ☐ | 24 | Gen 46–48 | Jacob's family settles in Goshen; Jacob blesses Ephraim and Manasseh | Israel goes to Egypt; Jacob blesses Ephraim and Manasseh |
 | ☐ | 25 | Gen 49–50 | Jacob blesses his sons and dies; Joseph forgives his brothers | The scepter of Judah (49:10); "God meant it for good" (50:20) |
 
-## Group 2: From Egypt to the Promised Land: Moses, Joshua, Judges, Ruth (Days 26–61)
+## Group 2: Mosaic Era & Rule of Judges (Days 26–61)
 
 Redemption from Egypt (c. 1446 BC on the early-date view common among conservative Reformed scholars), Sinai, the wilderness, and the conquest. Law sections are kept to the Ten Commandments, plus Leviticus 16 because Hebrews 9 builds on it. Judges 17–21 is read near the start of the judges period because Phinehas is still serving (Judg 20:28); Ruth is placed mid-period, after Gideon.
 
@@ -135,7 +135,7 @@ Redemption from Egypt (c. 1446 BC on the early-date view common among conservati
 | ☐ | 60 | Judg 13–14 | Samson's birth announced; his marriage and riddle | Samson's birth and marriage |
 | ☐ | 61 | Judg 15–16 | Samson's revenge on the Philistines; Delilah; Samson's death | Samson's victories and death |
 
-## Group 3: The United Kingdom: Samuel, Saul, David, and Solomon (Days 62–94)
+## Group 3: United Monarchy (Days 62–94)
 
 The rise of kingship, Saul's failure, and David as the anointed king with whom God makes the covenant fulfilled in Christ. David's psalms are read alongside the events their titles name, and Solomon's wisdom writings during his reign.
 
@@ -208,7 +208,7 @@ The rise of kingship, Saul's failure, and David as the anointed king with whom G
 | ☐ | S | *Eccl 4* | Oppression and toil; two are better than one | Oppression, toil, and the value of companionship (falls between Eccl 3 and 5) |
 | ☐ | S | *Eccl 6–11* | Wisdom's limits; enjoy life as God's gift; cast your bread | Unsatisfied desire; the limits of wisdom; enjoy life as God's gift; cast your bread on the waters |
 
-## Group 4: The Divided Kingdom and the Assyrian Age (931–c. 630 BC) (Days 95–131)
+## Group 4: Divided Monarchy & Assyrian Age (Days 95–131)
 
 Elijah and Elisha; the 8th-century prophets to the north (Jonah, Amos, Hosea) and to Judah (Isaiah, Micah); the fall of Samaria in 722 BC; Hezekiah's deliverance; and Manasseh's reign. Joel is undated and is placed in Joash's reign, a common conservative view. Isaiah 40–66 is read right after Hezekiah receives the Babylonian envoys (2 Kgs 20; Isa 39), where it sits in Isaiah, consistent with single authorship. The group ends with Nahum and Zephaniah, just before Jeremiah's call.
 
@@ -288,7 +288,7 @@ Elijah and Elisha; the 8th-century prophets to the north (Jonah, Amos, Hosea) an
 | ☐ | 130 | Nah 1–3 | The LORD's vengeance on Nineveh; the city's fall | The fall of Nineveh foretold |
 | ☐ | 131 | Zeph 1–3 | The day of the LORD's wrath; the LORD rejoices over his people | The Day of the LORD; he will rejoice over you with singing (c. 630 BC) |
 
-## Group 5: Jeremiah, the Exile, and the Return (627–430 BC) (Days 132–170)
+## Group 5: Exile & Restoration (Days 132–170)
 
 Jeremiah is broken up to follow his dated ministry, with Daniel and Ezekiel interleaved from 605 BC onward; then Cyrus's decree (538 BC), the rebuilt temple (515 BC), Esther's Persia (c. 480 BC), Ezra (458 BC), Nehemiah (445 BC), and Malachi alongside Nehemiah's last reforms (c. 430 BC). Zechariah 9–14 is undated and placed just after the dated parts of his book.
 
@@ -375,7 +375,7 @@ Jeremiah is broken up to follow his dated ministry, with Daniel and Ezekiel inte
 | ☐ | 169 | Neh 13; Mal 1 | Nehemiah's final reforms; God's love for Jacob; polluted offerings | Nehemiah's final reforms; "Jacob I loved" (cf. Rom 9:13) |
 | ☐ | 170 | Mal 2–4 | Faithless priests; the messenger of the covenant; Elijah to come | The messenger; the sun of righteousness; Elijah |
 
-## Group 6: The Life of Christ I: Birth to the Feast of Booths (Days 171–194)
+## Group 6: Early Life & Ministry of Jesus (Days 171–194)
 
 The Gospels are read as one harmonized account. Each event is read once, from the fullest or most distinctive Gospel, with parallels noted. John is read in full because nearly all of it is unique. This group covers the birth narratives and the Galilean ministry.
 
@@ -421,7 +421,7 @@ The Gospels are read as one harmonized account. Each event is read once, from th
 | ☐ | S | *Mark 9* | The transfiguration; a boy healed; who is the greatest | The Transfiguration; the boy with an unclean spirit; whoever is not against us is for us |
 | ☐ | 194 | John 7–8 | Jesus at the Feast of Booths; the light of the world; "I am" | Feast of Booths; "before Abraham was, I am" |
 
-## Group 7: The Life of Christ II: Toward Jerusalem, the Cross, and the Empty Tomb (Days 195–219)
+## Group 7: Later Ministry, Death & Resurrection of Jesus (Days 195–219)
 
 From Jesus setting his face toward Jerusalem (Luke 9:51) through Passion Week, the crucifixion, and the resurrection appearances.
 
@@ -464,7 +464,7 @@ From Jesus setting his face toward Jerusalem (Luke 9:51) through Passion Week, t
 | ☐ | S | *Mark 16* | The empty tomb; the appearances and commission | The empty tomb; the longer ending (16:9–20 is absent from the earliest manuscripts) |
 | ☐ | 219 | John 20–21 | The risen Jesus appears to Mary and Thomas; Peter restored | Thomas; Peter restored |
 
-## Group 8: The Church Begins: Acts 1–18, James, Galatians, 1–2 Thessalonians (Days 220–246)
+## Group 8: Early Church & First Missionary Journeys (Days 220–246)
 
 Each letter is placed at the point in Acts where it was most likely written. James is taken as the earliest letter (40s) and Galatians as written just before the Jerusalem Council; both datings are debated.
 
@@ -498,7 +498,7 @@ Each letter is placed at the point in Acts where it was most likely written. Jam
 | ☐ | 245 | 2 Thess 2 | The man of lawlessness; stand firm | The man of lawlessness |
 | ☐ | 246 | 2 Thess 3 | Pray for us; warning against idleness | Pray for us; warning against idleness |
 
-## Group 9: Ephesus and Corinth: Acts 19–20, 1–2 Corinthians (Days 247–276)
+## Group 9: Letters to Corinth (Days 247–276)
 
 Paul's long ministry in Ephesus, where he wrote 1 Corinthians, and his trip through Macedonia, where he wrote 2 Corinthians.
 
@@ -535,7 +535,7 @@ Paul's long ministry in Ephesus, where he wrote 1 Corinthians, and his trip thro
 | ☐ | 275 | 2 Cor 12 | Paul's vision; the thorn in the flesh; grace is sufficient | The thorn; grace is sufficient |
 | ☐ | 276 | 2 Cor 13 | Examine yourselves; final warnings and the blessing | Examine yourselves; the Trinitarian benediction |
 
-## Group 10: Romans and the Prison Letters (Days 277–307)
+## Group 10: Letter to Rome & Prison Letters (Days 277–307)
 
 Romans, written from Corinth just before Paul's last trip to Jerusalem; his arrest, trials, and journey to Rome; and the letters written from Roman imprisonment.
 
@@ -573,7 +573,7 @@ Romans, written from Corinth just before Paul's last trip to Jerusalem; his arre
 | ☐ | 306 | Col 4 | Continue in prayer; gracious speech; final greetings | Devoted to prayer; gracious speech; greetings |
 | ☐ | 307 | Philemon | Paul appeals for Onesimus, now a brother | Receive him as you would receive me |
 
-## Group 11: Philippians, 1 Timothy, Titus, 1 Peter, and Hebrews (Days 308–338)
+## Group 11: Pastoral & General Letters (Days 308–338)
 
 Philippians as the last prison letter, then letters from the years after Paul's release (c. AD 62–64), and Hebrews, written before the temple's fall in AD 70.
 
@@ -611,7 +611,7 @@ Philippians as the last prison letter, then letters from the years after Paul's 
 | ☐ | 337 | Heb 12 | Run the race; the Lord's discipline; Mount Zion | Discipline; Mount Zion |
 | ☐ | 338 | Heb 13 | Brotherly love; Jesus Christ the same yesterday, today, and forever | Jesus the same yesterday, today, forever |
 
-## Group 12: Last Words: 2 Timothy, 2 Peter, Jude, John's Letters, and Revelation (Days 339–365)
+## Group 12: Final Letters & Revelation (Days 339–365)
 
 The final letters of Paul and Peter (c. AD 67), Jude, John's letters written late in the century, and Revelation (c. AD 95). Reformed readers have held amillennial and postmillennial views of Revelation; the notes stay neutral.
 
