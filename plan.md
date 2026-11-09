@@ -22,7 +22,7 @@ WCF (Westminster Confession of Faith) and WSC (Westminster Shorter Catechism) no
 | 4 | 95–131 (37) | 36 (104 chapters) | The Divided Kingdom and the Assyrian Age (931–c. 630 BC) |
 | 5 | 132–170 (39) | 41 (150 chapters) | Jeremiah, the Exile, and the Return (627–430 BC) |
 | 6 | 171–194 (24) | 15 (16 chapters) | The Life of Christ I: Birth to the Feast of Booths |
-| 7 | 195–219 (25) | 12 (13 chapters) | The Life of Christ II: Toward Jerusalem, the Cross, and the Empty Tomb |
+| 7 | 195–219 (25) | 11 (12 chapters) | The Life of Christ II: Toward Jerusalem, the Cross, and the Empty Tomb |
 | 8 | 220–246 (27) | none | The Church Begins: Acts 1–18, James, Galatians, 1–2 Thessalonians |
 | 9 | 247–276 (30) | none | Ephesus and Corinth: Acts 19–20, 1–2 Corinthians |
 | 10 | 277–307 (31) | none | Romans and the Prison Letters |
@@ -457,9 +457,8 @@ From Jesus setting his face toward Jerusalem (Luke 9:51) through Passion Week, t
 | ☐ | 213 | John 15 | The vine and the branches; the world's hatred | The vine and the branches |
 | ☐ | 214 | John 16 | The work of the Spirit; sorrow turned to joy | The work of the Spirit |
 | ☐ | 215 | John 17 | Jesus' high-priestly prayer | The high-priestly prayer |
-| ☐ | 216 | Matt 27; Luke 23:6–12, 39–43 + Ps 22 | Before Pilate; Judas's death; the crucifixion; the thief; burial | The crucifixion (par. Mark 15; Luke 23) |
+| ☐ | 216 | Matt 27; Luke 23 + Ps 22 | Before Pilate and Herod; Judas's death; the crucifixion; the burial | The crucifixion (par. Mark 15; Luke 23) |
 | ☐ | S | *Mark 15* | Before Pilate; the crucifixion; the burial | Before Pilate; the crucifixion; burial |
-| ☐ | S | *Luke 23:1–5, 13–38, 44–56* | Before Pilate; "Father, forgive them"; Jesus' death and burial | Before Pilate; "Father, forgive them"; death and burial |
 | ☐ | 217 | John 18–19 | Arrest and trials; the crucifixion in John: "It is finished" | The passion in John; "It is finished" |
 | ☐ | 218 | Matt 28; Luke 24 | The empty tomb; the road to Emmaus; the Great Commission | The resurrection; Emmaus; Great Commission (par. Mark 16) |
 | ☐ | S | *Mark 16* | The empty tomb; the appearances and commission | The empty tomb; the longer ending (16:9–20 is absent from the earliest manuscripts) |
