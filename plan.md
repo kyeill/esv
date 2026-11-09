@@ -19,13 +19,13 @@ WCF (Westminster Confession of Faith) and WSC (Westminster Shorter Catechism) no
 | 1 | 1–25 (25) | 10 (42 chapters) | Primeval History & Patriarchal Narratives |
 | 2 | 26–61 (36) | 21 (115 chapters) | Mosaic Era & Rule of Judges |
 | 3 | 62–94 (33) | 33 (150 chapters) | United Monarchy |
-| 4 | 95–131 (37) | 36 (104 chapters) | Divided Monarchy & Assyrian Age |
+| 4 | 95–131 (37) | 36 (104 chapters) | Divided Monarchy |
 | 5 | 132–170 (39) | 41 (150 chapters) | Exile & Restoration |
 | 6 | 171–194 (24) | 15 (16 chapters) | Early Life & Ministry of Jesus |
 | 7 | 195–219 (25) | 11 (12 chapters) | Later Ministry, Death & Resurrection of Jesus |
 | 8 | 220–246 (27) | none | Early Church & First Missionary Journeys |
 | 9 | 247–276 (30) | none | Letters to Corinth |
-| 10 | 277–307 (31) | none | Letter to Rome & Prison Letters |
+| 10 | 277–307 (31) | none | Imprisonment in Rome |
 | 11 | 308–338 (31) | none | Pastoral & General Letters |
 | 12 | 339–365 (27) | none | Final Letters & Revelation |
 
@@ -208,7 +208,7 @@ The rise of kingship, Saul's failure, and David as the anointed king with whom G
 | ☐ | S | *Eccl 4* | Oppression and toil; two are better than one | Oppression, toil, and the value of companionship (falls between Eccl 3 and 5) |
 | ☐ | S | *Eccl 6–11* | Wisdom's limits; enjoy life as God's gift; cast your bread | Unsatisfied desire; the limits of wisdom; enjoy life as God's gift; cast your bread on the waters |
 
-## Group 4: Divided Monarchy & Assyrian Age (Days 95–131)
+## Group 4: Divided Monarchy (Days 95–131)
 
 Elijah and Elisha; the 8th-century prophets to the north (Jonah, Amos, Hosea) and to Judah (Isaiah, Micah); the fall of Samaria in 722 BC; Hezekiah's deliverance; and Manasseh's reign. Joel is undated and is placed in Joash's reign, a common conservative view. Isaiah 40–66 is read right after Hezekiah receives the Babylonian envoys (2 Kgs 20; Isa 39), where it sits in Isaiah, consistent with single authorship. The group ends with Nahum and Zephaniah, just before Jeremiah's call.
 
@@ -535,7 +535,7 @@ Paul's long ministry in Ephesus, where he wrote 1 Corinthians, and his trip thro
 | ☐ | 275 | 2 Cor 12 | Paul's vision; the thorn in the flesh; grace is sufficient | The thorn; grace is sufficient |
 | ☐ | 276 | 2 Cor 13 | Examine yourselves; final warnings and the blessing | Examine yourselves; the Trinitarian benediction |
 
-## Group 10: Letter to Rome & Prison Letters (Days 277–307)
+## Group 10: Imprisonment in Rome (Days 277–307)
 
 Romans, written from Corinth just before Paul's last trip to Jerusalem; his arrest, trials, and journey to Rome; and the letters written from Roman imprisonment.
 
