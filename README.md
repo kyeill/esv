@@ -7,7 +7,7 @@ phone's home screen to use it like an app.
 
 | Path | What it is |
 |------|------------|
-| `plan.md` | the plan itself, **the master copy** (started from `My Drive\365-day-chronological-bible-plan.md`, which is now out of date) |
+| `plan.md` | the plan itself, **the only copy** (started from `My Drive\365-day-chronological-bible-plan.md`, deleted 2026-11-08; that original is commit `edffae3`) |
 | `tools/build_plan.py` | turns `plan.md` into `docs/plan.json`; refuses a draft with missing or repeated days |
 | `docs/index.html` | the whole app, hand-written, no build step; Pages serves `docs/` from `main` |
 | `docs/manifest.webmanifest`, `docs/sw.js` | make it installable and open offline |
