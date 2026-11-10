@@ -36,7 +36,10 @@ check-off plan**: there is no read tracking at all, no progress bar, no title.
   this order: verses in Bible order, notes oldest first, then links to sermons
   on it by sermon date. Notes can be edited or deleted (hover).
 - **Sermons page:** each sermon has Date, Series, Title, Pastor, Verses, a
-  Summary and any number of sections (heading + points, one per line). The list
+  Summary and any number of sections (heading + points, one per line). In the
+  points, a line starting `#` is a small brown sub-heading and a line starting
+  `>` nests under the point above it; a section with a title and no points is
+  drawn as a divider (a heading over the sections after it). The list
   shows series newest first (by their latest sermon), oldest first inside a
   series; a sermon with no series stands alone. **Verses decides which passages
   a sermon shows on**, by chapter ("1 Pet 4:1–11" → Day 324); `bookNames` in
