@@ -708,11 +708,15 @@ document.addEventListener("keydown", ev => {
 });
 
 /* Series and Pastor in the sermon form: a pick list of the ones already used
-   (most recent first) that still takes any typed text. Focusing shows them
-   all; typing narrows the list. */
+   that still takes any typed text. Series: most recent first. Pastor: most
+   sermons first, then A-Z (his call, 2026-11-10). Focusing shows them all;
+   typing narrows the list. */
 function comboOpts(kind) {
   const list = (DATA?.sermons || []).slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  return [...new Set(list.map(s => String(s[kind] || "").trim()).filter(Boolean))];
+  const names = list.map(s => String(s[kind] || "").trim()).filter(Boolean);
+  if (kind !== "pastor") return [...new Set(names)];
+  const n = {}; names.forEach(x => n[x] = (n[x] || 0) + 1);
+  return Object.keys(n).sort((a, b) => n[b] - n[a] || a.localeCompare(b));
 }
 function showCombo(inp, q) {
   inp.parentElement.querySelector(".cmenu")?.remove();
