@@ -3,7 +3,7 @@
 // cached copy is the fallback when there is not. Check marks live in the page's
 // localStorage and the Google Sheet, so requests to script.google.com (and the
 // esv.org links) pass straight through.
-const CACHE = "reading-plan-v26";
+const CACHE = "reading-plan-v27";
 const SHELL = ["./", "./plan.json", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 
 self.addEventListener("install", e => {

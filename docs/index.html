@@ -262,7 +262,8 @@ const ui = {
 const remember = () => { ["view", "g", "sel", "ss", "per"].forEach(k => store.set("esv:" + k, ui[k])); store.set("esv:allChapters", ui.all); };
 
 /* ---------- small helpers ---------- */
-const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// months spelled out everywhere ("November 10, 2026"; his call, 2026-11-10)
+const MON = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const pad = n => String(n).padStart(2, "0");
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
 const fmt = s => { if (!s) return ""; const [y, m, d] = s.split("-").map(Number); return `${MON[m - 1]} ${d}, ${y}`; };
