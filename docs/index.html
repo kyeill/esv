@@ -137,7 +137,10 @@ ol{list-style:none;margin:0;padding:0}
 .sgrid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:28px;align-items:start;padding-top:20px}
 @media (max-width:820px){.sgrid{grid-template-columns:1fr}}
 .slist{display:grid;gap:6px}
-.series{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:10px 4px 0}
+.series{border:0;background:none;width:100%;text-align:left;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:10px 0 0;padding:6px 4px;border-radius:8px;display:flex;gap:8px;align-items:center}
+.series:hover{background:var(--surface);color:var(--ink)}
+.series span{width:10px;color:var(--ink-3);font-size:12px}
+.series em{font-style:normal;margin-left:auto;color:var(--ink-3);letter-spacing:0}
 .sitem{border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:2px}
 .sitem:hover{background:var(--surface)}
 .sitem.sel{background:var(--surface-2);border-color:var(--ink-3)}
@@ -156,6 +159,7 @@ ol{list-style:none;margin:0;padding:0}
 .facts .on{color:var(--ink-3);font-size:13px}
 .summary{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
 .summary h4,.sec h4{margin:0 0 6px;font:700 16px var(--head)}
+.sec h4{color:var(--day)}   /* sermon section titles: brown, like Verses and the day links */
 .summary p{margin:0;color:var(--ink-2);white-space:pre-wrap}
 .sec ul{margin:0;padding-left:20px;display:grid;gap:5px}
 .sec li{line-height:1.55}
@@ -495,9 +499,19 @@ function vSermons() {
   if (lockState !== "ok") return `<div class="sgrid"><div></div>${vLock("sermon notes")}</div>`;
   const groups = sermonGroups(), flat = groups.flat();
   const s = ui.editing || flat.find(x => x.id === ui.ss) || flat[0];
-  const list = groups.map(g => (g[0].series.trim() ? `<div class="series">${esc(g[0].series)}</div>` : "") +
-    g.map(x => `<div class="sitem${s && x.id === s.id ? " sel" : ""}" data-act="opensermon" data-id="${esc(x.id)}"><small>${fmt(x.date) || "No date"}</small><b>${esc(x.title || "Untitled sermon")}</b>
-      <span>${esc(x.verses)}${x.pastor ? " · " + esc(x.pastor) : ""}</span></div>`).join("")).join("");
+  // Series fold open and shut by their title. All start shut except the
+  // newest (and one whose sermon you open). A sermon with no series has no
+  // title and is always shown.
+  const key = g => g[0].series.trim() ? g[0].series.trim().toLowerCase() : null;
+  if (!ui.openSeries) ui.openSeries = new Set(groups.length && key(groups[0]) ? [key(groups[0])] : []);
+  const item = x => `<div class="sitem${s && x.id === s.id ? " sel" : ""}" data-act="opensermon" data-id="${esc(x.id)}"><small>${fmt(x.date) || "No date"}</small><b>${esc(x.title || "Untitled sermon")}</b>
+      <span>${esc(x.verses)}${x.pastor ? " · " + esc(x.pastor) : ""}</span></div>`;
+  const list = groups.map(g => {
+    const k = key(g);
+    if (!k) return g.map(item).join("");
+    const open = ui.openSeries.has(k);
+    return `<button class="series" data-act="series" data-v="${esc(k)}" aria-expanded="${open}"><span>${open ? "▾" : "▸"}</span>${esc(g[0].series)}<em>${g.length}</em></button>` + (open ? g.map(item).join("") : "");
+  }).join("");
   return `<div class="sgrid">
     <div class="slist"><button class="newbtn" data-act="newsermon2">+ New sermon</button>${list}</div>
     <div>${ui.editing ? sermonForm(ui.editing) : s ? sermonDoc(s) : `<p class="empty">No sermons yet. Use “+ New sermon”, or “+ Sermon on this passage” from any passage.</p>`}</div></div>`;
@@ -549,7 +563,12 @@ document.addEventListener("click", ev => {
     case "all": ui.all = v === "1"; remember(); return render();
     case "kind": ui.kind = v; return render();
     case "sermons": ev.preventDefault(); return ui.view === "sermons" ? openSection(ui.g, ui.sel) : go("sermons");
-    case "opensermon": ev.preventDefault(); return go("sermons", { ss:id });
+    case "opensermon": ev.preventDefault(); {
+      // opening a sermon (from a passage, or the list) unfolds its series
+      const m = (DATA?.sermons || []).find(x => x.id === id);
+      if (m?.series.trim()) (ui.openSeries ||= new Set()).add(m.series.trim().toLowerCase());
+      return go("sermons", { ss:id }); }
+    case "series": ui.openSeries.has(v) ? ui.openSeries.delete(v) : ui.openSeries.add(v); return render();
     case "goto": ev.preventDefault(); return openSection(M.byId[id].gi, id);
     case "savenote": {
       const text = document.getElementById("n-text").value.trim(); if (!text) return;
