@@ -9,7 +9,7 @@
  *            Day 14, "s:Gen 26" = that optional reading). Kind is verse or note.
  *            Ref is the verse or passage it names; Written is the day it was
  *            written (yyyy-mm-dd).
- *   Sermons  Id | Date | Series | Title | Pastor | Verses | Summary | Sections | Updated
+ *   Sermons  Id | Date | Series | Title | Pastor | Details | Verses | Summary | Sections | Updated
  *            One row per sermon. Verses decides which passages it shows on.
  *            Sections is a JSON list of {title, points:[...]}.
  *   Log      The old check marks (no longer used by the app; left as it was).
@@ -34,7 +34,7 @@
  */
 
 var NOTE_HEAD = ["Id", "Passage", "Kind", "Ref", "Text", "Written", "Updated"];
-var SERMON_HEAD = ["Id", "Date", "Series", "Title", "Pastor", "Verses", "Summary", "Sections", "Updated"];
+var SERMON_HEAD = ["Id", "Date", "Series", "Title", "Pastor", "Details", "Verses", "Summary", "Sections", "Updated"];
 var DATE = /^\d{4}-\d{2}-\d{2}$/;
 var PASSAGE = /^(d\d{1,3}|s:.{1,80})$/;
 var ID = /^[A-Za-z0-9_-]{4,40}$/;
@@ -113,7 +113,7 @@ function read_() {
     try { sections = JSON.parse(String(r[s.col.Sections] || "[]")) || []; } catch (err) { sections = []; }
     sermons.push({
       id: id, date: day_(r[s.col.Date]) || null, series: String(r[s.col.Series] || ""),
-      title: String(r[s.col.Title] || ""), pastor: String(r[s.col.Pastor] || ""),
+      title: String(r[s.col.Title] || ""), pastor: String(r[s.col.Pastor] || ""), details: String(r[s.col.Details] || ""),
       verses: String(r[s.col.Verses] || ""), summary: String(r[s.col.Summary] || ""),
       sections: sections
     });
@@ -141,7 +141,7 @@ function apply_(ops) {
       if (!ID.test(String(m.id || ""))) return;
       upsert_(sermons, SERMON_HEAD, m.id, {
         Date: DATE.test(String(m.date || "")) ? m.date : "", Series: String(m.series || "").slice(0, 200),
-        Title: String(m.title || "").slice(0, 300), Pastor: String(m.pastor || "").slice(0, 200),
+        Title: String(m.title || "").slice(0, 300), Pastor: String(m.pastor || "").slice(0, 200), Details: String(m.details || "").slice(0, 2000),
         Verses: String(m.verses || "").slice(0, 300), Summary: String(m.summary || "").slice(0, 20000),
         Sections: JSON.stringify(Array.isArray(m.sections) ? m.sections : []).slice(0, 45000)
       });

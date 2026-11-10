@@ -464,6 +464,7 @@ function sermonDoc(s) {
       <button class="ghost" data-act="editsermon">Edit</button></div>
     <dl class="facts">${s.date ? `<dt>Date</dt><dd>${fmt(s.date)}</dd>` : ""}
       ${s.pastor ? `<dt>Pastor</dt><dd>${esc(s.pastor)}</dd>` : ""}
+      ${s.details ? `<dt>Details</dt><dd>${esc(s.details)}</dd>` : ""}
       ${s.verses ? `<dt>Verses</dt><dd><a href="${esvUrl(s.verses)}" target="_blank" rel="noopener">${esc(s.verses)} ↗</a>
         ${on.length ? `<span class="on"> · shows on ${on.map(x => `<a href="#" data-act="goto" data-id="${esc(x.id)}">${x.day ? "Day " + x.day : esc(x.label)}</a>`).join(", ")}</span>` : `<span class="on"> · not matched to a passage</span>`}</dd>` : ""}</dl>
     ${s.summary ? `<div class="summary"><h4>Summary</h4><p>${esc(s.summary)}</p></div>` : ""}
@@ -479,7 +480,8 @@ function sermonForm(s) {
     <datalist id="serieslist">${series.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
     <label>Title<input id="f-title" value="${esc(s.title)}"></label>
     <div class="grid2"><label>Pastor<input id="f-pastor" value="${esc(s.pastor)}"></label>
-      <label>Verses (decides which passages it shows on)<input id="f-verses" value="${esc(s.verses)}" placeholder="e.g. 1 Peter 4:1–11"></label></div>
+      <label>Details (optional; hidden when empty)<input id="f-details" value="${esc(s.details || "")}"></label></div>
+    <label>Verses (decides which passages it shows on)<input id="f-verses" value="${esc(s.verses)}" placeholder="e.g. 1 Peter 4:1–11"></label>
     <label>Summary<textarea id="f-summary">${esc(s.summary)}</textarea></label>
     <div id="f-secs" style="display:grid;gap:10px">${secs.map((sec, i) => secEdit(i + 1, sec)).join("")}</div>
     <button class="addsec" data-act="addsec">+ Add section</button>
@@ -514,7 +516,7 @@ function render() {
 }
 function readSermonForm(s) {
   const v = id => document.getElementById(id).value.trim();
-  return { ...s, date:v("f-date"), series:v("f-series"), title:v("f-title"), pastor:v("f-pastor"), verses:v("f-verses"), summary:v("f-summary"),
+  return { ...s, date:v("f-date"), series:v("f-series"), title:v("f-title"), pastor:v("f-pastor"), details:v("f-details"), verses:v("f-verses"), summary:v("f-summary"),
     sections:[...document.querySelectorAll(".secedit")].map(d => ({ title:d.querySelector(".f-st").value.trim(),
       points:d.querySelector(".f-sp").value.split("\n").map(p => p.replace(/^\s*[-•*]\s*/, "").trim()).filter(Boolean) })).filter(x => x.title || x.points.length) };
 }
@@ -564,7 +566,7 @@ document.addEventListener("click", ev => {
     case "delnote": if (confirm("Delete this note? This can't be undone.")) change({ op:"delnote", id }); return;
     case "newsermon": case "newsermon2": {
       const verses = act === "newsermon" ? M.byId[ui.sel].label.replace(/ \+ .*/, "") : "";
-      const s = { id:newId("s"), date:today(), series:"", title:"", pastor:"", verses, summary:"", sections:[] };
+      const s = { id:newId("s"), date:today(), series:"", title:"", pastor:"", details:"", verses, summary:"", sections:[] };
       return go("sermons", { ss:s.id }) && (ui.editing = s, ui.fresh = s.id, render());
     }
     case "editsermon": { const s = DATA.sermons.find(x => x.id === ui.ss) || sermonGroups().flat()[0]; ui.editing = { ...s }; ui.fresh = null; $head.innerHTML = vHead(); $main.innerHTML = vSermons(); return; }

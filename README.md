@@ -70,7 +70,7 @@ in Kyle's Drive. Columns are found by header name; tabs are made on first use.
 
 - **Notes:** `Id | Passage | Kind | Ref | Text | Written | Updated`. Kind is
   `verse` or `note`; Written is the day it was written.
-- **Sermons:** `Id | Date | Series | Title | Pastor | Verses | Summary | Sections | Updated`.
+- **Sermons:** `Id | Date | Series | Title | Pastor | Details | Verses | Summary | Sections | Updated`.
   Sections is JSON: `[{"title":"1. …","points":["…"]}]`.
 - **Log:** the old check marks from before 2026-11-10; unused, left as it was.
 
