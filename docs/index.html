@@ -75,7 +75,8 @@ a{color:inherit;text-decoration:none}
 .big{font:700 34px/1.1 var(--head);margin-top:4px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
 .big:hover .lbl{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .go{font:600 13px var(--body);color:var(--accent)}
-.theme{margin:0;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+/* themes wrap when there isn't room, never cut off (his call, 2026-11-10) */
+.theme{margin:0;color:var(--ink-2);flex:1;min-width:0}
 .trow{display:flex;gap:10px;align-items:baseline;margin-top:6px}
 .trow .tedit{border:0;background:none;padding:0;color:var(--ink-3);font-size:12px;font-weight:600;opacity:0;transition:opacity .15s}
 .trow:hover .tedit,.tedit:focus{opacity:1}
@@ -141,7 +142,7 @@ ol{list-style:none;margin:0;padding:0}
 .it.sel{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
 .dn{grid-area:dn;font:600 12.5px var(--body);color:var(--ink-3);white-space:nowrap}
 .rd{grid-area:rd;font:600 15.5px/1.3 var(--head);color:var(--day)}
-.th{grid-area:th;font-size:13px;color:var(--day-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.th{grid-area:th;font-size:13px;color:var(--day-dim);min-width:0}
 .cnt{grid-area:cnt;font:600 11.5px var(--body);color:var(--ink-2);background:var(--surface-2);border-radius:999px;padding:1px 8px;display:inline-flex;gap:4px;align-items:center}
 .cnt i{width:6px;height:6px;border-radius:50%;background:var(--note)}
 .opt .rd{color:var(--ink-2)}
@@ -222,8 +223,6 @@ ol{list-style:none;margin:0;padding:0}
   .row2 .save{margin-left:0}
   .row2:has(.danger) .save{margin-left:auto}
 }
-/* themes wrap on a phone only; a narrowed desktop window keeps them to one line */
-@media (max-width:820px) and (hover:none){.theme,.th{white-space:normal;overflow:visible}}
 </style>
 </head>
 <body>
