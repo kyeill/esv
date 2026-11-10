@@ -75,7 +75,16 @@ a{color:inherit;text-decoration:none}
 .big{font:700 34px/1.1 var(--head);margin-top:4px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
 .big:hover .lbl{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .go{font:600 13px var(--body);color:var(--accent)}
-.theme{margin:6px 0 0;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theme{margin:0;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.trow{display:flex;gap:10px;align-items:baseline;margin-top:6px}
+.trow .tedit{border:0;background:none;padding:0;color:var(--ink-3);font-size:12px;font-weight:600;opacity:0;transition:opacity .15s}
+.trow:hover .tedit,.tedit:focus{opacity:1}
+@media (hover:none){.trow .tedit{opacity:1}}
+.tform{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.tform input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg);color:var(--ink);font-size:14.5px;outline:none}
+.tform .save{margin-left:0;padding:6px 14px}
+.tform .ghost{padding:5px 12px}
+.tform .linkbtn{color:var(--ink-3)}
 .compose{display:grid;gap:10px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--bg)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .chip{border:1px solid var(--line);background:none;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--ink-2);display:inline-flex;gap:6px;align-items:center}
@@ -97,18 +106,20 @@ textarea::placeholder,input::placeholder{color:var(--ink-3)}
 .note-top{display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
 .note-top .kind{color:var(--c);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:11px}
 .note-top .ref{color:var(--ink-2);font-weight:600}
+.note-top .vref{color:var(--verse);font-weight:600;font-size:13px}
 .note-top .acts{margin-left:auto;display:flex;gap:10px;opacity:0;transition:opacity .15s}
 .note:hover .acts,.note:focus-within .acts{opacity:1}
 @media (hover:none){.note-top .acts{opacity:1}}
 .acts button{border:0;background:none;padding:0;color:var(--ink-3);font-size:12px;font-weight:600}
 .acts button:hover{color:var(--ink)}
 .note p{margin:0;font-size:14.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
-.note blockquote{margin:0;font:500 15.5px/1.5 var(--head);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}
+.note blockquote{margin:0;font:400 15.5px/1.5 var(--head);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}
 .note .compose{margin-top:4px}
 a.slink{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--sermon);border-radius:10px;padding:10px 12px;background:var(--bg)}
 a.slink:hover{border-color:var(--ink-3);border-left-color:var(--sermon)}
 .slink b{font:700 16px var(--head)}
 .slink small{display:block;font-size:12.5px;color:var(--ink-3)}
+.slink .pass{display:block;font-size:12.5px;font-weight:600;color:var(--sermon)}
 .slink .arrow{color:var(--sermon);font-weight:700;white-space:nowrap;font-size:13px}
 
 /* passphrase */
@@ -150,6 +161,7 @@ ol{list-style:none;margin:0;padding:0}
 .sitem.sel{background:var(--surface-2);border-color:var(--ink-3)}
 .sitem small{font-size:12px;color:var(--ink-3)}
 .sitem b{font:700 16px/1.3 var(--head)}
+.sitem b.det{color:var(--day)}   /* a sermon with Details (Lead Elder, Easter...) */
 .sitem span{font-size:12.5px;color:var(--ink-2)}
 .newbtn{border:1px dashed var(--line);background:none;border-radius:12px;padding:10px;color:var(--sermon);font-weight:600}
 .sdoc{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:24px 28px;display:grid;gap:18px;min-width:0}
@@ -178,6 +190,12 @@ ol{list-style:none;margin:0;padding:0}
 .form label{display:grid;gap:4px;font-size:12px;color:var(--ink-3)}
 .form input,.form textarea{border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--bg);font-size:14.5px;outline:none;min-height:0}
 .form textarea{min-height:70px}
+.cmb{position:relative;display:grid}
+.cmb:after{content:"\25BE";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--ink-3);pointer-events:none;font-size:12px}
+.cmb input{padding-right:26px}
+.cmenu{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;margin:0;padding:4px;list-style:none;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;max-height:260px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.cmenu li{padding:6px 10px;border-radius:7px;font-size:14px;color:var(--ink);cursor:pointer}
+.cmenu li:hover,.cmenu li.on{background:var(--accent-soft)}
 .secedit{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
 .secedit .x{justify-self:end;border:0;background:none;color:var(--ink-3);font-size:12.5px}
 .addsec{border:1px dashed var(--line);background:none;border-radius:10px;padding:8px;color:var(--ink-2);font-weight:600}
@@ -200,10 +218,11 @@ ol{list-style:none;margin:0;padding:0}
   .sdoc{padding:18px 16px}
   .sdoc h2{font-size:24px}
   .form .grid2{grid-template-columns:1fr}
-  .theme,.th{white-space:normal;overflow:visible}   /* themes wrap on a phone (one line on desktop) */
   .row2 .save{margin-left:0}
   .row2:has(.danger) .save{margin-left:auto}
 }
+/* themes wrap on a phone only; a narrowed desktop window keeps them to one line */
+@media (max-width:820px) and (hover:none){.theme,.th{white-space:normal;overflow:visible}}
 </style>
 </head>
 <body>
@@ -237,7 +256,7 @@ let lockError = "";
 const ui = {
   view:store.get("esv:view", "section"), g:store.get("esv:g", 0), sel:store.get("esv:sel", null),
   ss:store.get("esv:ss", null), all:store.get("esv:allChapters", false), per:store.get("esv:per", {}),   // per: last passage open in each section
-  kind:"verse", editing:null, fresh:null, draft:"", editNote:null,   // fresh: id of a new sermon not saved yet; draft: unsaved note text
+  kind:"verse", editing:null, fresh:null, draft:"", editNote:null, editTheme:null, themeDraft:"",   // fresh: id of a new sermon not saved yet; draft: unsaved note text
 };
 // "all" is saved as esv:allChapters (default Reading Plan, his call 2026-11-10; the old esv:all is ignored)
 const remember = () => { ["view", "g", "sel", "ss", "per"].forEach(k => store.set("esv:" + k, ui[k])); store.set("esv:allChapters", ui.all); };
@@ -251,8 +270,11 @@ const short = s => s ? fmt(s).replace(/, \d+$/, "") : "";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 const esvUrl = q => "https://www.esv.org/" + encodeURI(q.replace(/[–—]/g, "-").replace(/\s*;\s*/g, ";").replace(/ /g, "+")) + "/";
 const newId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-// hover text for a theme: the theme, then the first draft's note
-const tip = x => x.note && x.note !== x.theme ? `${x.theme}\n\nOriginal note: ${x.note}` : x.theme;
+// a passage's theme: his own rewrite (Themes tab) if he made one, else the plan's
+const themeOf = x => DATA?.themes?.[x.id] || x.theme;
+// hover text for a theme: the theme, then the plan's (if rewritten) and the first draft's note
+const tip = x => { const t = themeOf(x);
+  return [t, t !== x.theme && "Plan's theme: " + x.theme, x.note && x.note !== x.theme && x.note !== t && "Original note: " + x.note].filter(Boolean).join("\n\n"); };
 
 /* ---------- the plan ---------- */
 let M;
@@ -324,16 +346,17 @@ function sermonGroups() {
 /* ---------- changes and sync ---------- */
 function applyLocal(op) {
   SIDX = null;
-  if (!DATA) DATA = { notes:[], sermons:[] };
+  if (!DATA) DATA = { notes:[], sermons:[], themes:{} };
   const up = (list, obj) => { const i = list.findIndex(x => x.id === obj.id); i >= 0 ? list[i] = obj : list.push(obj); };
   if (op.op === "note") up(DATA.notes, op.note);
   if (op.op === "sermon") up(DATA.sermons, op.sermon);
   if (op.op === "delnote") DATA.notes = DATA.notes.filter(x => x.id !== op.id);
   if (op.op === "delsermon") DATA.sermons = DATA.sermons.filter(x => x.id !== op.id);
+  if (op.op === "theme") { DATA.themes ||= {}; if (op.theme) DATA.themes[op.passage] = op.theme; else delete DATA.themes[op.passage]; }
 }
+const opKey = p => p.op === "theme" ? "t:" + p.passage : (p.note?.id || p.sermon?.id || p.id);
 function change(op) {
-  const target = op.note?.id || op.sermon?.id || op.id;
-  PENDING = PENDING.filter(p => (p.note?.id || p.sermon?.id || p.id) !== target);   // latest change per item wins
+  PENDING = PENDING.filter(p => opKey(p) !== opKey(op));   // latest change per item wins
   PENDING.push(op);
   applyLocal(op);
   store.set("esv:ops", PENDING); store.set("esv:data", DATA);
@@ -361,7 +384,7 @@ async function sync() {
       lockState = "ok";
       PENDING = PENDING.filter(p => !sent.includes(p));
       store.set("esv:ops", PENDING);
-      DATA = { notes:j.notes, sermons:j.sermons }; SIDX = null;
+      DATA = { notes:j.notes, sermons:j.sermons, themes:j.themes || {} }; SIDX = null;
       PENDING.forEach(applyLocal);
       store.set("esv:data", DATA);
       syncState = "ok";
@@ -383,7 +406,7 @@ async function unlock(pass, confirm) {
     const j = lockState === "choose" ? await call({ claim:pass, ops:[] }) : await (KEY = pass, call(null));
     if (!j.ok) { KEY = ""; lockError = j.error === "wrong-passphrase" ? "That's not the passphrase." : "Couldn't unlock: " + (j.error || "unknown error"); return render(); }
     KEY = pass; store.set("esv:key", KEY);
-    lockState = "ok"; DATA = { notes:j.notes, sermons:j.sermons }; SIDX = null;
+    lockState = "ok"; DATA = { notes:j.notes, sermons:j.sermons, themes:j.themes || {} }; SIDX = null;
     PENDING.forEach(applyLocal); store.set("esv:data", DATA);
     render(); if (PENDING.length) sync();
   } catch { KEY = ""; lockError = "Couldn't reach the Sheet. Check your connection."; render(); }
@@ -412,7 +435,10 @@ function vHead() {
 /* ---------- a section: the selected passage (left), every passage (right) ---------- */
 function noteCard(n) {
   if (ui.editNote === n.id) return `<article class="note" style="--c:var(--${n.kind})">${composer(n)}</article>`;
-  return `<article class="note" style="--c:var(--${n.kind})"><div class="note-top"><span class="kind">${n.kind}</span><span class="ref">${esc(n.ref)}</span>${n.written ? `<span>· ${short(n.written)}</span>` : ""}
+  // a verse shows just its reference, in green; a note keeps its label and date
+  const top = n.kind === "verse" ? `<span class="vref">${esc(n.ref)}</span>`
+    : `<span class="kind">${n.kind}</span><span class="ref">${esc(n.ref)}</span>${n.written ? `<span>· ${short(n.written)}</span>` : ""}`;
+  return `<article class="note" style="--c:var(--${n.kind})"><div class="note-top">${top}
       <span class="acts"><button data-act="editnote" data-id="${esc(n.id)}">Edit</button><button data-act="delnote" data-id="${esc(n.id)}">Delete</button></span></div>
     ${n.kind === "verse" ? `<blockquote>${esc(n.text)}</blockquote>` : `<p>${esc(n.text)}</p>`}</article>`;
 }
@@ -451,8 +477,9 @@ function vSection() {
     const mine = notesOf(ui.sel);
     const v = mine.filter(n => n.kind === "verse").sort((a, b) => verseKey(a.ref) - verseKey(b.ref));
     const n = mine.filter(n => n.kind === "note").sort((a, b) => (a.written || "").localeCompare(b.written || ""));
+    // passage (blue), title, then date · pastor
     const s = sermonsOn(ui.sel).map(m => `<a class="slink" href="#" data-act="opensermon" data-id="${esc(m.id)}"><div>
-        <small>Sermon${m.date ? " · " + fmt(m.date) : ""}</small>${m.pastor ? `<small>${esc(m.pastor)}</small>` : ""}<b>${esc(m.title || "Untitled sermon")}</b><small>${esc(m.verses)}</small></div><span class="arrow">Open →</span></a>`);
+        ${m.verses ? `<span class="pass">${esc(m.verses)}</span>` : ""}<b>${esc(m.title || "Untitled sermon")}</b><small>${[fmt(m.date), esc(m.pastor)].filter(Boolean).join(" · ")}</small></div><span class="arrow">Open →</span></a>`);
     const all = [...v.map(noteCard), ...n.map(noteCard), ...s];
     notesHtml = composer() + `<p class="notes-h">Notes on this passage</p><div class="notes">${all.length ? all.join("") : `<p class="empty">No notes on this passage yet.</p>`}</div>`;
   }
@@ -462,7 +489,10 @@ function vSection() {
       <div>
         <div class="kicker${x.day ? "" : " opt"}">${x.day ? "Day " + x.day : "Optional reading"}</div>
         <a class="big" href="${esvUrl(x.q)}" target="_blank" rel="noopener"><span class="lbl">${esc(x.label)}</span><span class="go">Read in ESV ↗</span></a>
-        <p class="theme" title="${esc(tip(x))}">${esc(x.theme)}</p></div>
+        ${ui.editTheme === x.id ? `<div class="tform"><input id="t-text" value="${esc(ui.themeDraft)}" aria-label="Theme" maxlength="500">
+            <button class="save" data-act="savetheme">Save</button><button class="ghost" data-act="canceltheme">Cancel</button>
+            ${DATA?.themes?.[x.id] ? `<button class="linkbtn" data-act="resettheme" title="${esc(x.theme)}">Use the plan's</button>` : ""}</div>`
+          : `<div class="trow"><p class="theme" title="${esc(tip(x))}">${esc(themeOf(x))}</p>${lockState === "ok" ? `<button class="tedit" data-act="edittheme">Edit</button>` : ""}</div>`}</div>
       ${notesHtml}
     </section>
     <section>
@@ -470,7 +500,7 @@ function vSection() {
         <div class="seg"><button data-act="all" data-v="1" aria-pressed="${ui.all}">All Chapters</button><button data-act="all" data-v="0" aria-pressed="${!ui.all}">Reading Plan</button></div></div>
       <ol>${its.map(i => { const c = lockState === "ok" ? countOn(i.id) : 0; return `<li class="it${i.day ? "" : " opt"}${i.id === ui.sel ? " sel" : ""}" data-act="pick" data-id="${esc(i.id)}">
         <span class="dn">${i.day ? "Day " + i.day : ""}</span><span class="rd">${esc(i.label)}</span>${c ? `<span class="cnt" title="${c} note${c > 1 ? "s" : ""}"><i></i>${c}</span>` : "<span></span>"}
-        <span class="th" title="${esc(tip(i))}">${esc(i.theme)}</span></li>`; }).join("")}</ol>
+        <span class="th" title="${esc(tip(i))}">${esc(themeOf(i))}</span></li>`; }).join("")}</ol>
     </section></div>`;
 }
 
@@ -511,13 +541,11 @@ function secHtml(sec) {
 }
 function sermonForm(s) {
   const secs = s.sections?.length ? s.sections : [{ title:"", points:[] }];
-  const series = [...new Set((DATA?.sermons || []).map(x => x.series.trim()).filter(Boolean))];
   return `<article class="sdoc"><div class="form" id="sform">
     <div class="grid2"><label>Date<input type="date" id="f-date" value="${esc(s.date || "")}"></label>
-      <label>Series<input id="f-series" list="serieslist" value="${esc(s.series)}" placeholder="leave blank if it isn't part of one"></label></div>
-    <datalist id="serieslist">${series.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
+      <label>Series<div class="cmb"><input id="f-series" data-combo="series" autocomplete="off" value="${esc(s.series)}" placeholder="pick one, type a new one, or leave blank"></div></label></div>
     <label>Title<input id="f-title" value="${esc(s.title)}"></label>
-    <div class="grid2"><label>Pastor<input id="f-pastor" value="${esc(s.pastor)}"></label>
+    <div class="grid2"><label>Pastor<div class="cmb"><input id="f-pastor" data-combo="pastor" autocomplete="off" value="${esc(s.pastor)}" placeholder="pick one or type a name"></div></label>
       <label>Details (optional; hidden when empty)<input id="f-details" value="${esc(s.details || "")}"></label></div>
     <label>Verses (decides which passages it shows on)<input id="f-verses" value="${esc(s.verses)}" placeholder="e.g. 1 Peter 4:1–11"></label>
     <label>Summary<textarea id="f-summary">${esc(s.summary)}</textarea></label>
@@ -538,7 +566,7 @@ function vSermons() {
   // title and is always shown.
   const key = g => g[0].series.trim() ? g[0].series.trim().toLowerCase() : null;
   if (!ui.openSeries) ui.openSeries = new Set(groups.length && key(groups[0]) ? [key(groups[0])] : []);
-  const item = x => `<div class="sitem${s && x.id === s.id ? " sel" : ""}" data-act="opensermon" data-id="${esc(x.id)}"><small>${fmt(x.date) || "No date"}</small><b>${esc(x.title || "Untitled sermon")}</b>
+  const item = x => `<div class="sitem${s && x.id === s.id ? " sel" : ""}" data-act="opensermon" data-id="${esc(x.id)}"><small>${fmt(x.date) || "No date"}</small><b${x.details ? ` class="det"` : ""}>${esc(x.title || "Untitled sermon")}</b>
       <span>${esc(x.verses)}${x.pastor ? " · " + esc(x.pastor) : ""}</span></div>`;
   const list = groups.map(g => {
     const k = key(g);
@@ -558,7 +586,8 @@ function vSermons() {
 const $head = document.getElementById("head"), $main = document.getElementById("main");
 function render() {
   if (!PLAN) { $main.innerHTML = `<p class="loading">${PLAN === false ? "Couldn't load the plan. Check your connection." : "Loading…"}</p>`; return; }
-  const keep = document.activeElement && ["n-text", "e-text", "e-ref", "n-ref", "pass", "pass2"].includes(document.activeElement.id) ? document.activeElement.id : null;
+  const keep = document.activeElement && ["n-text", "e-text", "e-ref", "n-ref", "pass", "pass2", "t-text"].includes(document.activeElement.id) ? document.activeElement.id : null;
+  if (document.getElementById("t-text")) ui.themeDraft = document.getElementById("t-text").value;
   if (document.getElementById("n-text")) ui.draft = ui.view === "section" ? document.getElementById("n-text").value : ui.draft;
   if (document.getElementById("sform")) return;          // never wipe a sermon being edited; it redraws on Save or Cancel
   $head.innerHTML = vHead();
@@ -596,7 +625,11 @@ document.addEventListener("click", ev => {
   const el = ev.target.closest("[data-act]"); if (!el) return;
   const { act, id, v } = el.dataset;
   switch (act) {
-    case "pick": ui.sel = id; ui.per[ui.g] = id; ui.editNote = null; ui.draft = ""; remember(); return render();
+    case "pick": ui.sel = id; ui.per[ui.g] = id; ui.editNote = null; ui.editTheme = null; ui.draft = ""; remember(); return render();
+    case "edittheme": ui.editTheme = ui.sel; ui.themeDraft = themeOf(M.byId[ui.sel]); render(); { const t = document.getElementById("t-text"); t.focus(); t.select(); } return;
+    case "canceltheme": ui.editTheme = null; return render();
+    case "savetheme": return saveTheme();
+    case "resettheme": ui.editTheme = null; return change({ op:"theme", passage:ui.sel, theme:"" });
     case "all": ui.all = v === "1"; remember(); return render();
     case "kind": ui.kind = v; return render();
     case "sermons": ev.preventDefault(); return ui.view === "sermons" ? openSection(ui.g, ui.sel) : go("sermons");
@@ -643,6 +676,58 @@ document.addEventListener("click", ev => {
       return change({ op:"delsermon", id:sid });
     }
   }
+});
+
+// A rewritten theme goes to the Themes tab; one put back to the plan's wording
+// (or left empty) removes the row, so the plan's own theme shows again.
+function saveTheme() {
+  const x = M.byId[ui.editTheme], v = document.getElementById("t-text").value.trim();
+  ui.editTheme = null;
+  if (!x) return render();
+  const now = DATA?.themes?.[x.id] || "";
+  const want = v === x.theme ? "" : v;
+  if (want === now) return render();
+  change({ op:"theme", passage:x.id, theme:want });
+}
+document.addEventListener("keydown", ev => {
+  if (ev.target.id === "t-text") {
+    if (ev.key === "Enter") { ev.preventDefault(); saveTheme(); }
+    if (ev.key === "Escape") { ui.editTheme = null; render(); }
+    return;
+  }
+  const inp = ev.target.closest?.("[data-combo]"); if (!inp) return;
+  const menu = inp.parentElement.querySelector(".cmenu"); if (!menu) return;
+  const lis = [...menu.children], i = lis.findIndex(li => li.classList.contains("on"));
+  if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+    ev.preventDefault();
+    const j = ev.key === "ArrowDown" ? Math.min(i + 1, lis.length - 1) : Math.max(i - 1, 0);
+    lis.forEach((li, k) => li.classList.toggle("on", k === j)); lis[j]?.scrollIntoView({ block:"nearest" });
+  } else if (ev.key === "Enter" && i >= 0) { ev.preventDefault(); inp.value = lis[i].dataset.v; menu.remove(); }
+  else if (ev.key === "Escape") menu.remove();
+});
+
+/* Series and Pastor in the sermon form: a pick list of the ones already used
+   (most recent first) that still takes any typed text. Focusing shows them
+   all; typing narrows the list. */
+function comboOpts(kind) {
+  const list = (DATA?.sermons || []).slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  return [...new Set(list.map(s => String(s[kind] || "").trim()).filter(Boolean))];
+}
+function showCombo(inp, q) {
+  inp.parentElement.querySelector(".cmenu")?.remove();
+  const want = q.trim().toLowerCase();
+  const opts = comboOpts(inp.dataset.combo).filter(o => !want || o.toLowerCase().includes(want));
+  if (!opts.length) return;
+  inp.insertAdjacentHTML("afterend", `<ul class="cmenu">${opts.map(o => `<li data-v="${esc(o)}">${esc(o)}</li>`).join("")}</ul>`);
+}
+document.addEventListener("focusin", ev => { if (ev.target.dataset?.combo) showCombo(ev.target, ""); });
+document.addEventListener("input", ev => { if (ev.target.dataset?.combo) showCombo(ev.target, ev.target.value); });
+document.addEventListener("focusout", ev => { if (ev.target.dataset?.combo) setTimeout(() => ev.target.parentElement?.querySelector(".cmenu")?.remove(), 150); });
+document.addEventListener("mousedown", ev => {
+  const li = ev.target.closest(".cmenu li");
+  if (li) { ev.preventDefault(); const inp = li.closest(".cmb").querySelector("input"); inp.value = li.dataset.v; li.parentElement.remove(); return; }
+  const inp = ev.target.closest("[data-combo]");
+  if (inp && document.activeElement === inp && !inp.parentElement.querySelector(".cmenu")) showCombo(inp, "");
 });
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});

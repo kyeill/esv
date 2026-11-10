@@ -12,6 +12,9 @@
  *   Sermons  Id | Date | Series | Title | Pastor | Details | Verses | Summary | Sections | Updated
  *            One row per sermon. Verses decides which passages it shows on.
  *            Sections is a JSON list of {title, points:[...]}.
+ *   Themes   Passage | Theme | Updated
+ *            A passage's one-line theme as Kyle rewrote it in the app; it
+ *            replaces the plan's own theme. No row = the plan's theme.
  *   Log      The old check marks (no longer used by the app; left as it was).
  *
  * Every call needs the passphrase: GET ?key=..., POST {key, ...}. Only a hash
@@ -20,9 +23,10 @@
  * passphrase, delete PASS_HASH (Project Settings > Script Properties); the
  * app then asks for a new one.
  *
- *   GET                  -> {ok, notes:[...], sermons:[...]}
+ *   GET                  -> {ok, notes:[...], sermons:[...], themes:{passage: theme}}
  *   POST {key, ops:[{op:"note", note}, {op:"delnote", id},
- *                   {op:"sermon", sermon}, {op:"delsermon", id}]}
+ *                   {op:"sermon", sermon}, {op:"delsermon", id},
+ *                   {op:"theme", passage, theme}]}   (empty theme = back to the plan's)
  *                        -> applies them, answers like GET
  *   wrong or missing key -> {ok:false, error:"no-passphrase" | "wrong-passphrase"}
  *
@@ -35,6 +39,7 @@
 
 var NOTE_HEAD = ["Id", "Passage", "Kind", "Ref", "Text", "Written", "Updated"];
 var SERMON_HEAD = ["Id", "Date", "Series", "Title", "Pastor", "Details", "Verses", "Summary", "Sections", "Updated"];
+var THEME_HEAD = ["Passage", "Theme", "Updated"];
 var DATE = /^\d{4}-\d{2}-\d{2}$/;
 var PASSAGE = /^(d\d{1,3}|s:.{1,80})$/;
 var ID = /^[A-Za-z0-9_-]{4,40}$/;
@@ -118,7 +123,12 @@ function read_() {
       sections: sections
     });
   });
-  return { ok: true, notes: notes, sermons: sermons };
+  var themes = {}, th = table_(tab_(ss, "Themes", THEME_HEAD), THEME_HEAD);
+  th.rows.forEach(function (r) {
+    var p = String(r[th.col.Passage] || "").trim(), v = String(r[th.col.Theme] || "").trim();
+    if (p && v) themes[p] = v;
+  });
+  return { ok: true, notes: notes, sermons: sermons, themes: themes };
 }
 
 /* ---------- writing ---------- */
@@ -126,7 +136,7 @@ function read_() {
 function apply_(ops) {
   if (!ops.length) return;
   var ss = SpreadsheetApp.getActive();
-  var notes = tab_(ss, "Notes", NOTE_HEAD), sermons = tab_(ss, "Sermons", SERMON_HEAD);
+  var notes = tab_(ss, "Notes", NOTE_HEAD), sermons = tab_(ss, "Sermons", SERMON_HEAD), themes = tab_(ss, "Themes", THEME_HEAD);
   ops.forEach(function (o) {
     if (o.op === "note") {
       var n = o.note || {};
@@ -145,6 +155,12 @@ function apply_(ops) {
         Verses: String(m.verses || "").slice(0, 300), Summary: String(m.summary || "").slice(0, 20000),
         Sections: JSON.stringify(Array.isArray(m.sections) ? m.sections : []).slice(0, 45000)
       });
+    } else if (o.op === "theme") {
+      var p = String(o.passage || "");
+      if (!PASSAGE.test(p)) return;
+      var v = String(o.theme || "").trim().slice(0, 500);
+      if (v) upsert_(themes, THEME_HEAD, p, { Theme: v }, "Passage");
+      else remove_(themes, THEME_HEAD, p, "Passage");
     } else if (o.op === "delnote") {
       remove_(notes, NOTE_HEAD, o.id);
     } else if (o.op === "delsermon") {
@@ -153,18 +169,20 @@ function apply_(ops) {
   });
 }
 
-// Write the row whose Id is id, or append it; only the named columns change.
+// Write the row whose Id (or other key column) is id, or append it; only the
+// named columns change.
 // The row is formatted as plain text first, so Sheets keeps everything exactly
 // as typed: otherwise "2026-11-08" turns into a date (and comes back a day off
 // in another time zone), "3/4" into a date, and a note starting with "=" or "+"
 // into a formula. Updated is written as text too ("yyyy-mm-dd hh:mm").
-function upsert_(sh, head, id, values) {
+function upsert_(sh, head, id, values, key) {
+  key = key || "Id";
   values.Updated = Utilities.formatDate(new Date(), SpreadsheetApp.getActive().getSpreadsheetTimeZone(), "yyyy-MM-dd HH:mm");
   var t = table_(sh, head), row = -1;
-  for (var i = 0; i < t.rows.length; i++) if (String(t.rows[i][t.col.Id]).trim() === id) { row = i + 2; break; }
+  for (var i = 0; i < t.rows.length; i++) if (String(t.rows[i][t.col[key]]).trim() === id) { row = i + 2; break; }
   if (row < 0) row = sh.getLastRow() + 1;
   sh.getRange(row, 1, 1, t.width).setNumberFormat("@");
-  values.Id = id;
+  values[key] = id;
   // Text starting with "=" would still run as a formula, even in a plain-text
   // cell; a leading apostrophe makes Sheets keep it as text (and hides itself).
   Object.keys(values).forEach(function (k) {
@@ -173,9 +191,9 @@ function upsert_(sh, head, id, values) {
   });
 }
 
-function remove_(sh, head, id) {
-  var t = table_(sh, head);
-  for (var i = t.rows.length - 1; i >= 0; i--) if (String(t.rows[i][t.col.Id]).trim() === String(id)) sh.deleteRow(i + 2);
+function remove_(sh, head, id, key) {
+  var t = table_(sh, head), c = t.col[key || "Id"];
+  for (var i = t.rows.length - 1; i >= 0; i--) if (String(t.rows[i][c]).trim() === String(id)) sh.deleteRow(i + 2);
 }
 
 /* ---------- helpers ---------- */
