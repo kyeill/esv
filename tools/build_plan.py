@@ -164,9 +164,12 @@ def main():
     # book names a person might type in a sermon's Verses ("1 Pet 4", "Psalms 23",
     # "song of songs 2"), lowercased, mapped to the names used in each "q"
     names = {}
+    roman = {"1 ": "i ", "2 ": "ii ", "3 ": "iii "}   # "I Peter", "II Samuel", "III John"
     for abbr, name in BOOKS.items():
-        names[abbr.lower()] = name
-        names[name.lower()] = name
+        for key in (abbr.lower(), name.lower()):
+            names[key] = name
+            if key[:2] in roman:
+                names[roman[key[:2]] + key[2:]] = name
     names.update({"psalms": "Psalm", "pss": "Psalm", "song of songs": "Song of Solomon",
                   "canticles": "Song of Solomon", "philem": "Philemon", "jas": "James",
                   "rev.": "Revelation", "revelations": "Revelation"})
