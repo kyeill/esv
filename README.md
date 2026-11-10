@@ -29,12 +29,17 @@ check-off plan**: there is no read tracking at all, no progress bar, no title.
 - **A section, right:** every passage in it (no check boxes). Plan days are
   brown; optional readings ("Supplementary" in the plan, never called that on
   screen) are grey with the day column blank. Toggle **All Chapters / Reading
-  Plan** (starts on Reading Plan). A count shows on passages with notes. Themes are one line on desktop (they wrap on a phone), the first
-  draft's note on hover.
-- **A section, left:** the selected passage (linked to esv.org, with its theme),
+  Plan** (starts on Reading Plan). A count shows on passages with notes. Themes are one line on desktop, even in
+  a narrowed window (they wrap only on a touch phone); the first draft's note
+  on hover.
+- **A section, left:** the selected passage (linked to esv.org, with its theme;
+  hover the theme for **Edit** to rewrite it, kept in the Themes tab, with
+  "Use the plan's" to go back),
   a box to add a **Verse** or **Note**, and that passage's notes only, always in
   this order: verses in Bible order, notes oldest first, then links to sermons
-  on it by sermon date. Notes can be edited or deleted (hover).
+  on it by sermon date. Notes can be edited or deleted (hover). A verse shows
+  only its reference (green) and the text; a sermon card shows its passage
+  (blue), title, then date · pastor.
 - **Sermons page:** each sermon has Date, Series, Title, Pastor, Verses, a
   Summary and any number of sections (heading + points, one per line). In the
   points, a line starting `#` is a small brown sub-heading and a line starting
@@ -45,6 +50,9 @@ check-off plan**: there is no read tracking at all, no progress bar, no title.
   a sermon shows on**, by chapter ("1 Pet 4:1–11" → Day 324); `bookNames` in
   `plan.json` lets it be typed loosely ("Ps 120", "Psalms 121", "Song of Songs").
   "+ Sermon on this passage" starts one with today's date and the passage.
+  Series and Pastor in the form drop down the ones already used (most recent
+  first) and still take any typed text. In the list, a sermon with Details has
+  a brown title.
 
 **Book names** are spelled out when the main reading is one book ("Genesis 9;
 11", "Genesis 1–2 + Ps 8"); several books keep the plan's abbreviations ("Ex 40;
@@ -76,6 +84,8 @@ in Kyle's Drive. Columns are found by header name; tabs are made on first use.
   `verse` or `note`; Written is the day it was written.
 - **Sermons:** `Id | Date | Series | Title | Pastor | Details | Verses | Summary | Sections | Updated`.
   Sections is JSON: `[{"title":"1. …","points":["…"]}]`.
+- **Themes:** `Passage | Theme | Updated`. A passage's theme as rewritten in
+  the app; no row means the plan's own theme.
 - **Log:** the old check marks from before 2026-11-10; unused, left as it was.
 
 Every cell is written as plain text, so dates, "3/4" and notes starting with
@@ -102,8 +112,9 @@ open sermon form is never redrawn by a sync, and leaving it asks first.
 
 `API` at the top of the script in `docs/index.html`:
 
-- `GET ?key=…` returns `{ok, notes:[…], sermons:[…]}`.
-- `POST {key, ops:[{op:"note", note}, {op:"delnote", id}, {op:"sermon", sermon}, {op:"delsermon", id}]}`
+- `GET ?key=…` returns `{ok, notes:[…], sermons:[…], themes:{passage: theme}}`.
+- `POST {key, ops:[{op:"note", note}, {op:"delnote", id}, {op:"sermon", sermon}, {op:"delsermon", id}, {op:"theme", passage, theme}]}`
+  (an empty theme removes the row)
   applies them and answers the same way. `POST {claim, ops:[]}` sets the
   passphrase when none is set. Sent as text/plain to avoid a CORS preflight.
 - A missing or wrong key answers `{ok:false, error:"no-passphrase" | "wrong-passphrase"}`.
