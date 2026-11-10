@@ -66,7 +66,9 @@ a{color:inherit;text-decoration:none}
 @media (max-width:820px){.cols{grid-template-columns:1fr}.desk{position:static!important}}
 
 /* left: the selected passage and its notes */
-.desk{position:sticky;top:96px;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:20px 22px;display:grid;gap:16px;min-width:0}
+.desk{position:sticky;top:96px;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:20px 22px;display:grid;gap:16px;min-width:0;align-content:start}
+/* desktop: the passage box (notes, sermons) scrolls on its own, beside the list */
+@media (min-width:821px){.desk{max-height:calc(100vh - 116px);overflow-y:auto;scrollbar-width:thin}}
 .desk > *{min-width:0}
 .kicker{font:700 12.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .kicker.opt{color:var(--ink-3)}
@@ -516,7 +518,10 @@ function vSermons() {
     const k = key(g);
     if (!k) return g.map(item).join("");
     const open = ui.openSeries.has(k);
-    return `<button class="series" data-act="series" data-v="${esc(k)}" aria-expanded="${open}"><span>${open ? "▾" : "▸"}</span>${esc(g[0].series)}<em>${g.length}</em></button>` + (open ? g.map(item).join("") : "");
+    // the years it ran: "(2026)", or "(2024-25)" across a new year
+    const ys = g.map(x => +(x.date || "").slice(0, 4)).filter(Boolean), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const years = !ys.length ? "" : y0 === y1 ? ` (${y0})` : ` (${y0}-${String(y1).slice(2)})`;
+    return `<button class="series" data-act="series" data-v="${esc(k)}" aria-expanded="${open}"><span>${open ? "▾" : "▸"}</span>${esc(g[0].series)}${years}<em>${g.length}</em></button>` + (open ? g.map(item).join("") : "");
   }).join("");
   return `<div class="sgrid">
     <div class="slist"><button class="newbtn" data-act="newsermon2">+ New sermon</button>${list}</div>
