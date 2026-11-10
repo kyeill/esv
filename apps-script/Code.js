@@ -1,44 +1,54 @@
 /**
- * Reading Plan data -- the check marks behind https://kyeill.github.io/esv/.
+ * Reading Plan data -- the notes and sermons behind https://kyeill.github.io/esv/.
  *
- * Bound to the "Reading Plan" Google Sheet. One tab, safe to edit by hand;
+ * Bound to the "Reading Plan" Google Sheet. Tabs are safe to edit by hand;
  * columns are found by their header, so they can be moved:
  *
- *   Log   Id | Reading | Date | Saved
- *         One row per reading marked read. Id ties the row to the plan
- *         ("d14" = Day 14, "s:Gen 26" = that supplement); Reading is only for
- *         people looking at the Sheet. Date is the day it was marked read.
- *         Deleting a row un-checks it.
+ *   Notes    Id | Passage | Kind | Ref | Text | Written | Updated
+ *            One row per verse or note. Passage ties it to the plan ("d14" =
+ *            Day 14, "s:Gen 26" = that optional reading). Kind is verse or note.
+ *            Ref is the verse or passage it names; Written is the day it was
+ *            written (yyyy-mm-dd).
+ *   Sermons  Id | Date | Series | Title | Pastor | Verses | Summary | Sections | Updated
+ *            One row per sermon. Verses decides which passages it shows on.
+ *            Sections is a JSON list of {title, points:[...]}.
+ *   Log      The old check marks (no longer used by the app; left as it was).
  *
- *   GET                                         -> {ok, done:[{id, date}]}
- *   POST {ops:[{op:"set", id, date, reading}, {op:"del", id}]}
- *                                               -> applies them, answers like GET
+ * Every call needs the passphrase: GET ?key=..., POST {key, ...}. Only a hash
+ * of it is kept, in the script property PASS_HASH. If PASS_HASH is missing,
+ * the first POST with {claim: "<passphrase>"} sets it. To reset a forgotten
+ * passphrase, delete PASS_HASH (Project Settings > Script Properties); the
+ * app then asks for a new one.
+ *
+ *   GET                  -> {ok, notes:[...], sermons:[...]}
+ *   POST {key, ops:[{op:"note", note}, {op:"delnote", id},
+ *                   {op:"sermon", sermon}, {op:"delsermon", id}]}
+ *                        -> applies them, answers like GET
+ *   wrong or missing key -> {ok:false, error:"no-passphrase" | "wrong-passphrase"}
  *
  * The page POSTs as text/plain so the browser sends it without a CORS
  * preflight, which Apps Script cannot answer.
  *
- * Deployed with clasp (see the README); runs as Kyle, callable by anyone.
+ * Deployed with clasp (see the README); runs as Kyle, callable by anyone who
+ * has the passphrase.
  */
 
-var HEAD = ["Id", "Reading", "Date", "Saved"];
+var NOTE_HEAD = ["Id", "Passage", "Kind", "Ref", "Text", "Written", "Updated"];
+var SERMON_HEAD = ["Id", "Date", "Series", "Title", "Pastor", "Verses", "Summary", "Sections", "Updated"];
 var DATE = /^\d{4}-\d{2}-\d{2}$/;
-var ID = /^(d\d{1,3}|s:.{1,80})$/;
+var PASSAGE = /^(d\d{1,3}|s:.{1,80})$/;
+var ID = /^[A-Za-z0-9_-]{4,40}$/;
 
-// Run once from the editor: asks for permission and builds the tab.
+// Run once from the editor: asks for permission and builds the tabs.
 function setup() {
   var ss = SpreadsheetApp.getActive();
-  var sh = ss.getSheetByName("Log") || ss.insertSheet("Log", 0);
-  if (sh.getLastRow() === 0) {
-    sh.getRange(1, 1, 1, HEAD.length).setValues([HEAD]).setFontWeight("bold");
-    sh.setFrozenRows(1);
-  }
-  sh.getRange("C:C").setNumberFormat("@");
-  var blank = ss.getSheetByName("Sheet1");
-  if (blank && blank.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(blank);
+  tab_(ss, "Notes", NOTE_HEAD).getRange("F:F").setNumberFormat("@");
+  tab_(ss, "Sermons", SERMON_HEAD).getRange("B:B").setNumberFormat("@");
 }
 
 function doGet(e) {
-  return json_(read_());
+  var key = (e && e.parameter && e.parameter.key) || "";
+  return json_(guard_(key) || read_());
 }
 
 function doPost(e) {
@@ -51,6 +61,15 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(15000);
   try {
+    var props = PropertiesService.getScriptProperties();
+    if (body.claim && !props.getProperty("PASS_HASH")) {
+      var pass = String(body.claim);
+      if (pass.length < 6) return json_({ ok: false, error: "passphrase too short" });
+      props.setProperty("PASS_HASH", hash_(pass));
+      body.key = pass;
+    }
+    var bad = guard_(body.key);
+    if (bad) return json_(bad);
     apply_(body.ops || []);
     return json_(read_());
   } finally {
@@ -58,75 +77,126 @@ function doPost(e) {
   }
 }
 
+/* ---------- passphrase ---------- */
+
+function guard_(key) {
+  var want = PropertiesService.getScriptProperties().getProperty("PASS_HASH");
+  if (!want) return { ok: false, error: "no-passphrase" };
+  if (!key || hash_(String(key)) !== want) return { ok: false, error: "wrong-passphrase" };
+  return null;
+}
+
+function hash_(s) {
+  return Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, "reading-plan:" + s, Utilities.Charset.UTF_8));
+}
+
+/* ---------- reading ---------- */
+
 function read_() {
-  var t = table_(sheet_()), done = [], seen = {};
+  var ss = SpreadsheetApp.getActive(), notes = [], sermons = [];
+  var t = table_(tab_(ss, "Notes", NOTE_HEAD), NOTE_HEAD);
   t.rows.forEach(function (r) {
     var id = String(r[t.col.Id] || "").trim();
-    if (!id || seen[id]) return;
-    seen[id] = true;
-    done.push({ id: id, date: day_(r[t.col.Date]) || null });
+    if (!id) return;
+    notes.push({
+      id: id, passage: String(r[t.col.Passage] || "").trim(),
+      kind: String(r[t.col.Kind] || "note").trim().toLowerCase() === "verse" ? "verse" : "note",
+      ref: String(r[t.col.Ref] || ""), text: String(r[t.col.Text] || ""),
+      written: day_(r[t.col.Written]) || null
+    });
   });
-  return { ok: true, done: done };
+  var s = table_(tab_(ss, "Sermons", SERMON_HEAD), SERMON_HEAD);
+  s.rows.forEach(function (r) {
+    var id = String(r[s.col.Id] || "").trim();
+    if (!id) return;
+    var sections = [];
+    try { sections = JSON.parse(String(r[s.col.Sections] || "[]")) || []; } catch (err) { sections = []; }
+    sermons.push({
+      id: id, date: day_(r[s.col.Date]) || null, series: String(r[s.col.Series] || ""),
+      title: String(r[s.col.Title] || ""), pastor: String(r[s.col.Pastor] || ""),
+      verses: String(r[s.col.Verses] || ""), summary: String(r[s.col.Summary] || ""),
+      sections: sections
+    });
+  });
+  return { ok: true, notes: notes, sermons: sermons };
 }
+
+/* ---------- writing ---------- */
 
 function apply_(ops) {
   if (!ops.length) return;
-  var sh = sheet_(), t = table_(sh), at = {};
-  t.rows.forEach(function (r, i) {
-    var id = String(r[t.col.Id] || "").trim();
-    (at[id] = at[id] || []).push(i + 2);
-  });
-  var now = new Date(), doomed = [], appends = [];
+  var ss = SpreadsheetApp.getActive();
+  var notes = tab_(ss, "Notes", NOTE_HEAD), sermons = tab_(ss, "Sermons", SERMON_HEAD);
   ops.forEach(function (o) {
-    var id = String(o.id || "");
-    if (!ID.test(id)) return;
-    if (o.op === "del") {
-      (at[id] || []).forEach(function (row) { doomed.push(row); });
-      delete at[id];
-      return;
-    }
-    if (o.op !== "set" || !DATE.test(String(o.date || ""))) return;
-    var reading = String(o.reading || "").slice(0, 120);
-    if (at[id]) {
-      var row = at[id][0];
-      sh.getRange(row, t.col.Date + 1).setValue(o.date);
-      sh.getRange(row, t.col.Saved + 1).setValue(now);
-    } else {
-      var line = new Array(t.width).fill("");
-      line[t.col.Id] = id;
-      line[t.col.Reading] = reading;
-      line[t.col.Date] = o.date;
-      line[t.col.Saved] = now;
-      appends.push(line);
-      at[id] = [-1];   // a second set in the same batch must not append again
+    if (o.op === "note") {
+      var n = o.note || {};
+      if (!ID.test(String(n.id || "")) || !PASSAGE.test(String(n.passage || ""))) return;
+      upsert_(notes, NOTE_HEAD, n.id, {
+        Passage: n.passage, Kind: n.kind === "verse" ? "verse" : "note",
+        Ref: String(n.ref || "").slice(0, 200), Text: String(n.text || "").slice(0, 20000),
+        Written: DATE.test(String(n.written || "")) ? n.written : ""
+      });
+    } else if (o.op === "sermon") {
+      var m = o.sermon || {};
+      if (!ID.test(String(m.id || ""))) return;
+      upsert_(sermons, SERMON_HEAD, m.id, {
+        Date: DATE.test(String(m.date || "")) ? m.date : "", Series: String(m.series || "").slice(0, 200),
+        Title: String(m.title || "").slice(0, 300), Pastor: String(m.pastor || "").slice(0, 200),
+        Verses: String(m.verses || "").slice(0, 300), Summary: String(m.summary || "").slice(0, 20000),
+        Sections: JSON.stringify(Array.isArray(m.sections) ? m.sections : []).slice(0, 45000)
+      });
+    } else if (o.op === "delnote") {
+      remove_(notes, NOTE_HEAD, o.id);
+    } else if (o.op === "delsermon") {
+      remove_(sermons, SERMON_HEAD, o.id);
     }
   });
-  if (appends.length) {
-    var start = sh.getLastRow() + 1;
-    sh.getRange(start, 1, appends.length, t.width).setValues(appends);
-    sh.getRange(start, t.col.Saved + 1, appends.length, 1).setNumberFormat("yyyy-mm-dd hh:mm");
-  }
-  doomed.filter(function (r) { return r > 0; })
-    .sort(function (a, b) { return b - a; })
-    .forEach(function (r) { sh.deleteRow(r); });
+}
+
+// Write the row whose Id is id, or append it; only the named columns change.
+// The row is formatted as plain text first, so Sheets keeps everything exactly
+// as typed: otherwise "2026-11-08" turns into a date (and comes back a day off
+// in another time zone), "3/4" into a date, and a note starting with "=" or "+"
+// into a formula. Updated is written as text too ("yyyy-mm-dd hh:mm").
+function upsert_(sh, head, id, values) {
+  values.Updated = Utilities.formatDate(new Date(), SpreadsheetApp.getActive().getSpreadsheetTimeZone(), "yyyy-MM-dd HH:mm");
+  var t = table_(sh, head), row = -1;
+  for (var i = 0; i < t.rows.length; i++) if (String(t.rows[i][t.col.Id]).trim() === id) { row = i + 2; break; }
+  if (row < 0) row = sh.getLastRow() + 1;
+  sh.getRange(row, 1, 1, t.width).setNumberFormat("@");
+  values.Id = id;
+  // Text starting with "=" would still run as a formula, even in a plain-text
+  // cell; a leading apostrophe makes Sheets keep it as text (and hides itself).
+  Object.keys(values).forEach(function (k) {
+    var v = String(values[k] == null ? "" : values[k]);
+    sh.getRange(row, t.col[k] + 1).setValue(v.charAt(0) === "=" ? "'" + v : v);
+  });
+}
+
+function remove_(sh, head, id) {
+  var t = table_(sh, head);
+  for (var i = t.rows.length - 1; i >= 0; i--) if (String(t.rows[i][t.col.Id]).trim() === String(id)) sh.deleteRow(i + 2);
 }
 
 /* ---------- helpers ---------- */
 
-function sheet_() {
-  var sh = SpreadsheetApp.getActive().getSheetByName("Log");
-  if (!sh) { setup(); sh = SpreadsheetApp.getActive().getSheetByName("Log"); }
+function tab_(ss, name, head) {
+  var sh = ss.getSheetByName(name) || ss.insertSheet(name);
+  if (sh.getLastRow() === 0) {
+    sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight("bold");
+    sh.setFrozenRows(1);
+  }
   return sh;
 }
 
 // Rows under the header, plus each header's column index. Missing headers are
 // added at the right so a hand-edited tab still works.
-function table_(sh) {
+function table_(sh, head) {
   var width = Math.max(sh.getLastColumn(), 1);
   var first = sh.getRange(1, 1, 1, width).getValues()[0].map(function (h) { return String(h).trim(); });
-  if (first.length === 1 && first[0] === "") first = [];   // a tab with nothing in it
+  if (first.length === 1 && first[0] === "") first = [];
   var col = {};
-  HEAD.forEach(function (h) {
+  head.forEach(function (h) {
     var i = first.indexOf(h);
     if (i < 0) {
       i = first.length;
@@ -142,7 +212,8 @@ function table_(sh) {
 }
 
 function day_(v) {
-  if (v instanceof Date) return Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd");
+  // a date typed into the Sheet by hand: read it in the Sheet's own time zone
+  if (v instanceof Date) return Utilities.formatDate(v, SpreadsheetApp.getActive().getSpreadsheetTimeZone(), "yyyy-MM-dd");
   var s = String(v || "").trim();
   return DATE.test(s) ? s : "";
 }

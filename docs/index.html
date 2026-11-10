@@ -16,16 +16,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" media="print" onload="this.media='all'">
 <style>
-/* Built for desktop first (Kyle's main screen), still fine on a phone.
-   Warm dark, serif for readings and headings, Inter for everything else (his
-   pick, option A of the 2026-11-08 mockups). Gold = buttons and progress;
-   brown = the plan's days (it stands out more, his call); plain = the optional
-   (*) readings. */
+/* Desktop first (Kyle's main screen), still usable on a phone. Warm dark,
+   serif for scripture and headings, Inter for everything else.
+   Gold = buttons and the selected passage; brown = the plan's days; plain =
+   the optional readings; green = verses, gold = notes, blue = sermons. */
 :root{
   --bg:#1b1916; --surface:#23201c; --surface-2:#2c2823; --line:#3a352e; --line-soft:#2a2621;
   --ink:#ece6dc; --ink-2:#bdb3a4; --ink-3:#8c8274;
   --accent:#d6a756; --accent-ink:#1b1505; --accent-soft:#3a2f1c;
-  --day:#b39470; --day-dim:#8f7a60;   /* brown, for the plan's days */
+  --day:#b39470; --day-dim:#8f7a60;
+  --note:#d6a756; --verse:#8fbf9a; --sermon:#8fb3d9;
   --warn:#e8ab4f; --warn-soft:#382b15; --bad:#ec8a76;
   --head:"Source Serif 4",Georgia,serif;
   --body:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -34,326 +34,545 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
-button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-a{color:inherit}
-a.rd:hover,a.big-rd:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.app{max-width:1080px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
-.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{font:700 21px/1 var(--head)}
-.top-r{display:flex;align-items:center;gap:10px}
-.screen{display:grid;gap:22px;align-content:start;padding-top:8px}
-.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px}
-.seg button{border:0;background:none;padding:7px 18px;border-radius:999px;color:var(--ink-2);font-weight:600;font-size:14px}
-.seg button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .25)}
-.seg.small button{padding:4px 12px;font-size:12.5px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit;text-decoration:none}
+.app{max-width:1200px;margin-inline:auto;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.empty{color:var(--ink-3);font-size:14px;margin:0}
+.loading{color:var(--ink-3);text-align:center;padding:60px 0}
+
+/* top: the section dropdown is the heading; Sermons on the right */
+.head{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(14px + env(safe-area-inset-top,0px)) 0 12px;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.head > div:first-child{min-width:0;flex:1}
+.pick{position:relative;display:inline-block;max-width:100%}
+.pick select{appearance:none;-webkit-appearance:none;border:0;background:none;font:700 28px/1.2 var(--head);color:var(--ink);padding:2px 34px 2px 0;cursor:pointer;max-width:100%;text-overflow:ellipsis}
+.pick select option{font:500 15px var(--body);background:var(--surface);color:var(--ink)}
+.pick::after{content:"▾";position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:18px;pointer-events:none}
+.pick:hover::after{color:var(--ink)}
+.pick.small select{font:600 15px var(--body);color:var(--ink-2);padding-right:26px;width:min(240px,55vw)}   /* else it is as wide as its longest section name */
+.pick.small::after{font-size:14px}
+.h-title{font:700 28px/1.2 var(--head)}
+.books{font-size:13.5px;color:var(--ink-2);margin-top:4px}
+.h-right{display:flex;gap:14px;align-items:center;white-space:nowrap;flex-wrap:wrap}
+.meta{font-size:13px;color:var(--ink-3)}
+.sermbtn{border:1px solid var(--line);background:none;border-radius:999px;padding:7px 16px;font-weight:600;font-size:14px;color:var(--ink-2);display:inline-flex;gap:8px;align-items:center}
+.sermbtn i{width:8px;height:8px;border-radius:50%;background:var(--sermon)}
+.sermbtn[aria-pressed=true]{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
 .sync{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--warn-soft);color:var(--warn)}
 .sync.bad{background:var(--surface-2);color:var(--bad)}
-.empty{color:var(--ink-3);text-align:center;padding:40px 0}
-.label{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:0 0 6px}
-.star{color:var(--ink-2);font-weight:700}
 
-/* progress */
-.prog{display:grid;gap:7px}
-.prog-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-.prog-top b{font:700 28px/1.1 var(--head);font-variant-numeric:tabular-nums}
-.prog-top span{font-size:13.5px;color:var(--ink-3)}
-.bar{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:inherit}
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;align-items:start;padding-top:20px}
+@media (max-width:820px){.cols{grid-template-columns:1fr}.desk{position:static!important}}
 
-/* Next: the card and its lists; two columns on a wide screen */
-.cols{display:grid;gap:22px;align-items:start}
-.col{display:grid;gap:22px;min-width:0}
-@media (min-width:900px){.cols{grid-template-columns:1.25fr 1fr;gap:32px}}
-.next{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:20px 22px;display:grid;gap:10px}
-.next > *{min-width:0}
-.kicker{font-size:12.5px;color:var(--ink-3);font-weight:600;line-height:1.35}
-.dayno{font:700 13px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.big-rd{font:700 38px/1.1 var(--head);text-decoration:none;display:inline-flex;align-items:baseline;column-gap:12px;flex-wrap:wrap}
-.go{font:600 13px var(--body);color:var(--accent);white-space:nowrap}
-.theme{margin:0;color:var(--ink-2);font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mark{border:0;border-radius:12px;height:50px;font-weight:700;font-size:16px;background:var(--accent);color:var(--accent-ink);margin-top:6px}
-.mark:hover{filter:brightness(1.06)}
-.done-all{text-align:center;padding:28px 10px;display:grid;gap:6px}
-.done-all b{font:700 30px/1.15 var(--head)}
+/* left: the selected passage and its notes */
+.desk{position:sticky;top:96px;border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:20px 22px;display:grid;gap:16px;min-width:0}
+.desk > *{min-width:0}
+.kicker{font:700 12.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.kicker.opt{color:var(--ink-3)}
+.big{font:700 34px/1.1 var(--head);margin-top:4px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.big:hover .lbl{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.go{font:600 13px var(--body);color:var(--accent)}
+.theme{margin:6px 0 0;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.compose{display:grid;gap:10px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--bg)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:none;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--ink-2);display:inline-flex;gap:6px;align-items:center}
+.chip i{width:8px;height:8px;border-radius:50%}
+.chip[aria-pressed=true]{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
+.linkbtn{border:0;background:none;color:var(--sermon);font-size:13px;font-weight:600;padding:4px 2px}
+.chips .linkbtn{margin-left:auto}
+textarea{width:100%;min-height:96px;resize:vertical;border:0;background:none;outline:none;font-size:15px;line-height:1.55}
+textarea::placeholder,input::placeholder{color:var(--ink-3)}
+.row2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.field{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:13px;color:var(--ink-3)}
+.field input{border:0;background:none;outline:none;width:160px;color:var(--ink);font-size:13.5px}
+.save{margin-left:auto;border:0;border-radius:10px;padding:8px 16px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+.save:disabled{opacity:.5;cursor:default}
+.ghost{border:1px solid var(--line);background:none;border-radius:10px;padding:7px 14px;font-weight:600;color:var(--ink-2)}
+.notes-h{font:700 17px var(--head);margin:0}
+.notes{display:grid;gap:14px}
+.note{border-left:3px solid var(--c);padding:4px 0 4px 12px;display:grid;gap:4px;position:relative}
+.note-top{display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+.note-top .kind{color:var(--c);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:11px}
+.note-top .ref{color:var(--ink-2);font-weight:600}
+.note-top .acts{margin-left:auto;display:flex;gap:10px;opacity:0;transition:opacity .15s}
+.note:hover .acts,.note:focus-within .acts{opacity:1}
+@media (hover:none){.note-top .acts{opacity:1}}
+.acts button{border:0;background:none;padding:0;color:var(--ink-3);font-size:12px;font-weight:600}
+.acts button:hover{color:var(--ink)}
+.note p{margin:0;font-size:14.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.note blockquote{margin:0;font:500 15.5px/1.5 var(--head);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}
+.note .compose{margin-top:4px}
+a.slink{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--sermon);border-radius:10px;padding:10px 12px;background:var(--bg)}
+a.slink:hover{border-color:var(--ink-3);border-left-color:var(--sermon)}
+.slink b{font:700 16px var(--head)}
+.slink small{display:block;font-size:12.5px;color:var(--ink-3)}
+.slink .arrow{color:var(--sermon);font-weight:700;white-space:nowrap;font-size:13px}
 
-/* reading rows. Stacked (phone, and the side lists on Next):
-     o  Day 14  Gen 25; 27            Nov 8
-        Jacob and Esau; election
-   One line on a wide screen in Plan (.wide):
-     o  Day 14  Gen 25; 27   Jacob and Esau; election   Nov 8 */
-.list{list-style:none;margin:0;padding:0;display:grid}
-.it{display:grid;grid-template-columns:30px auto 1fr auto;grid-template-areas:"tick dn rd when" "tick . th th";column-gap:10px;row-gap:1px;align-items:baseline;padding:9px 8px;border-radius:10px;border-bottom:1px solid var(--line-soft)}
-.it:last-child{border-bottom:0}
-/* plan days: brown passage, brown circle, brown fill when read */
-.tick{grid-area:tick;align-self:center;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--day-dim);background:none;color:transparent;font-size:13px;font-weight:700;line-height:1;padding:0}
-.tick:hover{border-color:var(--day)}
-.tick[aria-pressed="true"]{background:var(--day);border-color:var(--day);color:var(--bg)}
-.dn{grid-area:dn;font:600 13px var(--body);color:var(--ink-3);min-width:48px;white-space:nowrap}
-.rd{grid-area:rd;font:600 16px/1.3 var(--head);text-decoration:none;min-width:0;color:var(--day)}
-.th{grid-area:th;font-size:13.5px;color:var(--day-dim);line-height:1.4;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* one line, always; full text on hover */
-.when{grid-area:when;font-size:12px;color:var(--ink-3);white-space:nowrap;text-align:right}
-.it.next-row{background:var(--accent-soft)}
-.it.next-row .tick{border-color:var(--accent)}
-@media (min-width:760px){
-  .list.wide .it{grid-template-columns:30px 64px minmax(170px,280px) 1fr 76px;grid-template-areas:"tick dn rd th when";align-items:center}
-}
-/* optional (*) readings: no day number, plain text, grey circle */
-.it.opt .rd{color:var(--ink-2)}
-.it.opt .th{color:var(--ink-3)}
-.it.opt .tick{border-color:#5b544a}
-.it.opt .tick:hover{border-color:var(--ink-3)}
-.it.opt .tick[aria-pressed="true"]{background:var(--ink-3);border-color:var(--ink-3);color:var(--bg)}
+/* passphrase */
+.lock{display:grid;gap:10px;border:1px dashed var(--line);border-radius:14px;padding:16px}
+.lock b{font:700 16px var(--head)}
+.lock p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.lock input{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--bg);outline:none;font-size:15px}
+.lock .err{color:var(--bad);font-size:13px}
 
-/* Plan: one collapsible card per group */
-.planbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;font-size:13px;color:var(--ink-3)}
-.grp{border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.grp-h{width:100%;border:0;background:var(--surface);text-align:left;padding:14px 18px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
-.grp-h:hover{background:var(--surface-2)}
-.grp-h .t{font:700 18px/1.3 var(--head)}
-.grp-h .n{color:var(--ink-3);margin-right:8px}
-.grp-h .c{font-size:14px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.grp-h .c.full{color:var(--accent)}
-.grp-h .books{font-size:13px;color:var(--ink-2);line-height:1.45}   /* the books in this group, in Bible order */
-.grp-h .days{font-size:12.5px;color:var(--ink-3);text-align:right;white-space:nowrap;align-self:start}
-.grp-h .bar{height:4px;grid-column:1 / -1;margin-top:4px}
-.grp-b{padding:4px 10px 10px}
+/* right: every passage in the section */
+.listbar{display:flex;justify-content:space-between;align-items:center;margin:0 0 6px;font-size:13px;color:var(--ink-3)}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:4px 12px;border-radius:999px;color:var(--ink-2);font-weight:600;font-size:12.5px}
+.seg button[aria-pressed=true]{background:var(--bg);color:var(--ink)}
+ol{list-style:none;margin:0;padding:0}
+.it{display:grid;grid-template-columns:52px minmax(0,1fr) auto;column-gap:10px;row-gap:1px;grid-template-areas:"dn rd cnt" ". th th";align-items:baseline;padding:8px 10px;border-radius:10px;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.it:hover{background:var(--surface)}
+.it.sel{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.dn{grid-area:dn;font:600 12.5px var(--body);color:var(--ink-3);white-space:nowrap}
+.rd{grid-area:rd;font:600 15.5px/1.3 var(--head);color:var(--day)}
+.th{grid-area:th;font-size:13px;color:var(--day-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cnt{grid-area:cnt;font:600 11.5px var(--body);color:var(--ink-2);background:var(--surface-2);border-radius:999px;padding:1px 8px;display:inline-flex;gap:4px;align-items:center}
+.cnt i{width:6px;height:6px;border-radius:50%;background:var(--note)}
+.opt .rd{color:var(--ink-2)}
+.opt .th{color:var(--ink-3)}
 
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:20;background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 10px 10px 16px;display:flex;gap:14px;align-items:center;font-size:14px;font-weight:600;box-shadow:0 6px 20px rgb(0 0 0 / .4);max-width:calc(100vw - 28px)}
-.toast[hidden]{display:none}
-.toast span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.toast button{border:0;background:var(--bg);color:var(--accent);border-radius:10px;padding:7px 12px;font-weight:700}
+/* Sermons page */
+.sgrid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:28px;align-items:start;padding-top:20px}
+@media (max-width:820px){.sgrid{grid-template-columns:1fr}}
+.slist{display:grid;gap:6px}
+.series{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:10px 4px 0}
+.sitem{border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;gap:2px}
+.sitem:hover{background:var(--surface)}
+.sitem.sel{background:var(--surface-2);border-color:var(--ink-3)}
+.sitem small{font-size:12px;color:var(--ink-3)}
+.sitem b{font:700 16px/1.3 var(--head)}
+.sitem span{font-size:12.5px;color:var(--ink-2)}
+.newbtn{border:1px dashed var(--line);background:none;border-radius:12px;padding:10px;color:var(--sermon);font-weight:600}
+.sdoc{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:24px 28px;display:grid;gap:18px;min-width:0}
+.sdoc-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.sdoc h2{margin:0;font:700 30px/1.15 var(--head);color:var(--accent)}
+.sdoc .ser{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:4px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:14px;margin:0}
+.facts dt{color:var(--ink-3)}
+.facts dd{margin:0}
+.facts dd a{color:var(--day);font-weight:600}
+.facts .on{color:var(--ink-3);font-size:13px}
+.summary{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.summary h4,.sec h4{margin:0 0 6px;font:700 16px var(--head)}
+.summary p{margin:0;color:var(--ink-2);white-space:pre-wrap}
+.sec ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.sec li{line-height:1.55}
+.form{display:grid;gap:12px}
+.form .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:grid;gap:4px;font-size:12px;color:var(--ink-3)}
+.form input,.form textarea{border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--bg);font-size:14.5px;outline:none;min-height:0}
+.form textarea{min-height:70px}
+.secedit{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
+.secedit .x{justify-self:end;border:0;background:none;color:var(--ink-3);font-size:12.5px}
+.addsec{border:1px dashed var(--line);background:none;border-radius:10px;padding:8px;color:var(--ink-2);font-weight:600}
+.danger{border:0;background:none;color:var(--bad);font-weight:600;font-size:13px;margin-right:auto}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="top" id="top"></div>
-  <div class="screen" id="screen"></div>
+  <header class="head" id="head"></header>
+  <main id="main"><p class="loading">Loading…</p></main>
 </div>
-<div class="toast" id="toast" hidden></div>
 
 <script>
-/* The plan itself is plan.json (built from plan.md by tools/build_plan.py).
-   Check marks live in a Google Sheet behind an Apps Script web app
-   (apps-script/ in the repo). This page keeps a copy in localStorage so it opens
-   instantly and works offline; changes queue up and are sent when there is a
-   connection. With no API set, check marks stay on this device only. */
+/* The plan is plan.json (built from plan.md by tools/build_plan.py). Notes and
+   sermons live in the Reading Plan Google Sheet behind an Apps Script web app
+   (apps-script/ in the repo), which needs the passphrase on every call. This
+   page keeps a copy in localStorage, so it opens instantly and works offline;
+   changes queue up and are sent when there is a connection. */
 const API = "https://script.google.com/macros/s/AKfycbzzRbPGyNyGCCyjqh2poPMRuw1yAwJprIpi_GyINF_6cZPWsfzJ7KSz6iIcGDBNTeQZ/exec";
 
 /* ---------- storage ---------- */
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
 };
-let DONE = store.get("esv:done", null);           // {id: "yyyy-mm-dd"} as the Sheet last sent it, plus local changes
-let PENDING = store.get("esv:pending", []);       // [{op, id, date, reading}] not yet acknowledged
+let KEY = store.get("esv:key", "");                     // the passphrase on this device
+let DATA = store.get("esv:data", null);                 // {notes, sermons} as the Sheet last sent them, plus local changes
+let PENDING = store.get("esv:ops", []);                 // changes not yet acknowledged
 let PLAN = null;
-let syncState = "ok";                             // ok, offline or error
-const ui = { tab:"next", sup:store.get("esv:sup", true), open:new Set() };
+let syncState = "ok";                                   // ok, offline, error
+let lockState = KEY ? "ok" : "unknown";                 // ok, choose (no passphrase yet), enter, unknown
+let lockError = "";
+// what was on screen last time (this device only)
+const ui = {
+  view:store.get("esv:view", "section"), g:store.get("esv:g", 0), sel:store.get("esv:sel", null),
+  ss:store.get("esv:ss", null), all:store.get("esv:all", true), per:store.get("esv:per", {}),   // per: last passage open in each section
+  kind:"verse", editing:null, fresh:null, draft:"", editNote:null,   // fresh: id of a new sermon not saved yet; draft: unsaved note text
+};
+const remember = () => ["view", "g", "sel", "ss", "all", "per"].forEach(k => store.set("esv:" + k, ui[k]));
 
 /* ---------- small helpers ---------- */
 const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const pad = n => String(n).padStart(2, "0");
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
-const fmt = s => { const [y, m, d] = s.split("-").map(Number); return `${MON[m - 1]} ${d}` + (y !== new Date().getFullYear() ? `, ${y}` : ""); };
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-const esvUrl = q => "https://www.esv.org/" + encodeURI(q.replace(/; /g, ";").replace(/ /g, "+")) + "/";
+const fmt = s => { if (!s) return ""; const [y, m, d] = s.split("-").map(Number); return `${MON[m - 1]} ${d}, ${y}`; };
+const short = s => s ? fmt(s).replace(/, \d+$/, "") : "";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const esvUrl = q => "https://www.esv.org/" + encodeURI(q.replace(/[–—]/g, "-").replace(/\s*;\s*/g, ";").replace(/ /g, "+")) + "/";
+const newId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+// hover text for a theme: the theme, then the first draft's note
+const tip = x => x.note && x.note !== x.theme ? `${x.theme}\n\nOriginal note: ${x.note}` : x.theme;
 
-/* ---------- the model, built once from plan.json ---------- */
+/* ---------- the plan ---------- */
 let M;
 function model() {
-  const items = [], byId = {}, days = [];
-  PLAN.groups.forEach(g => {
-    let last = null;
-    g.items.forEach(it => {
-      const x = { ...it, g, after:null };
-      if (x.day) { last = x; days.push(x); } else x.after = last;   // a supplement follows the day before it
-      items.push(x); byId[x.id] = x;
+  const items = [], byId = {};
+  PLAN.groups.forEach((g, gi) => g.items.forEach(it => { const x = { ...it, gi, sp:spans(it.q) }; items.push(x); byId[x.id] = x; }));
+  M = { items, byId };
+}
+const firstOf = gi => (PLAN.groups[gi].items.find(x => x.day) || PLAN.groups[gi].items[0]).id;
+
+/* Which plan passages a reference falls in, by chapter.
+   "1 Pet 4:1–11" -> chapter 4 of 1 Peter; "Luke 9:51–10:42" -> chapters 9-10;
+   a one-chapter book with no number ("Jude") is chapter 1. */
+const bookName = b => PLAN.bookNames[b.trim().toLowerCase().replace(/\.$/, "")] || b.trim();
+// After "Luke 23:1-5" a comma piece ("13-38") is more verses of chapter 23;
+// after a whole chapter ("Gen 9") a piece ("11") is another chapter.
+function spans(q) {
+  let book = null, chapterOfVerses = false;
+  const out = [];
+  String(q || "").replace(/[–—]/g, "-").split(/\s*;\s*|\s*\+\s*/).filter(Boolean).forEach(seg => {
+    seg.split(/\s*,\s*/).filter(Boolean).forEach((p, i) => {
+      p = p.trim();
+      const m = p.match(/^((?:[1-3]\s?)?[A-Za-z][A-Za-z. ]*?)\s*(\d+)(?::(\d+))?(?:\s*-\s*(\d+)(?::(\d+))?)?$/);
+      if (m) {
+        book = bookName(m[1]); chapterOfVerses = !!m[3];
+        const from = +m[2], to = m[4] && (m[5] || !m[3]) ? +m[4] : from;
+        return out.push({ book, from, to });
+      }
+      const c = p.match(/^(\d+)(?::(\d+))?(?:\s*-\s*(\d+)(?::\d+)?)?$/);
+      if (c && book) {
+        if (i > 0 && chapterOfVerses && !c[2]) return;          // more verses of the same chapter
+        chapterOfVerses = !!c[2];
+        return out.push({ book, from:+c[1], to:c[3] && !c[2] ? +c[3] : +c[1] });
+      }
+      if (/^[1-3]?\s?[A-Za-z]/.test(p)) { book = bookName(p); out.push({ book, from:1, to:1 }); }
     });
   });
-  days.sort((a, b) => a.day - b.day);
-  const supsOf = {};
-  items.forEach(x => { if (!x.day && x.after) (supsOf[x.after.id] ||= []).push(x); });
-  M = { items, byId, days, supsOf, nSup:items.length - days.length };
+  return out;
 }
-const isDone = id => !!DONE[id];
-const nextDay = () => M.days.find(d => !isDone(d.id)) || null;
+function passagesFor(ref) {
+  const want = spans(ref);
+  if (!want.length) return [];
+  return M.items.filter(x => x.sp.some(a => want.some(b => a.book === b.book && a.from <= b.to && b.from <= a.to)));
+}
+
+/* ---------- notes and sermons ---------- */
+const notesOf = id => (DATA?.notes || []).filter(n => n.passage === id);
+// passage id -> its sermons, oldest first; rebuilt only when the data changes
+let SIDX = null;
+function sermonsOn(id) {
+  if (!SIDX) {
+    SIDX = {};
+    (DATA?.sermons || []).forEach(s => passagesFor(s.verses).forEach(x => (SIDX[x.id] ||= []).push(s)));
+    Object.values(SIDX).forEach(l => l.sort((a, b) => (a.date || "").localeCompare(b.date || "")));
+  }
+  return SIDX[id] || [];
+}
+const verseKey = r => { const m = String(r).match(/(\d+):(\d+)/) || String(r).match(/(\d+)/); return m ? +m[1] * 1000 + (+m[2] || 0) : 0; };
+const countOn = id => notesOf(id).length + sermonsOn(id).length;
+// Sermons page order: series newest first (by their latest sermon); within a
+// series oldest first. A sermon with no series is a series of its own.
+function sermonGroups() {
+  const groups = {};
+  (DATA?.sermons || []).forEach(s => { const k = s.series.trim() ? "s:" + s.series.trim().toLowerCase() : "x:" + s.id; (groups[k] ||= []).push(s); });
+  return Object.values(groups).map(list => list.sort((a, b) => (a.date || "").localeCompare(b.date || "")))
+    .sort((a, b) => (b.at(-1).date || "").localeCompare(a.at(-1).date || ""));
+}
 
 /* ---------- changes and sync ---------- */
 function applyLocal(op) {
-  if (op.op === "del") delete DONE[op.id]; else DONE[op.id] = op.date;
+  SIDX = null;
+  if (!DATA) DATA = { notes:[], sermons:[] };
+  const up = (list, obj) => { const i = list.findIndex(x => x.id === obj.id); i >= 0 ? list[i] = obj : list.push(obj); };
+  if (op.op === "note") up(DATA.notes, op.note);
+  if (op.op === "sermon") up(DATA.sermons, op.sermon);
+  if (op.op === "delnote") DATA.notes = DATA.notes.filter(x => x.id !== op.id);
+  if (op.op === "delsermon") DATA.sermons = DATA.sermons.filter(x => x.id !== op.id);
 }
 function change(op) {
-  PENDING = PENDING.filter(p => p.id !== op.id);   // one op per reading
+  const target = op.note?.id || op.sermon?.id || op.id;
+  PENDING = PENDING.filter(p => (p.note?.id || p.sermon?.id || p.id) !== target);   // latest change per item wins
   PENDING.push(op);
   applyLocal(op);
-  store.set("esv:pending", PENDING); store.set("esv:done", DONE);
+  store.set("esv:ops", PENDING); store.set("esv:data", DATA);
   render(); clearTimeout(change.t); change.t = setTimeout(sync, 700);
 }
-function toggle(id) {
-  const x = M.byId[id]; if (!x) return;
-  const was = DONE[id];
-  change(was ? { op:"del", id } : { op:"set", id, date:today(), reading:(x.day ? `Day ${x.day}: ` : "* ") + x.label });
-  if (!was) toast(`${x.day ? "Day " + x.day : x.label} marked read`, () => change({ op:"del", id }));
-  else toast(null);
-}
 let busy = false;
+async function call(body) {
+  const r = body
+    ? await fetch(API, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify(body) })
+    : await fetch(API + "?key=" + encodeURIComponent(KEY) + "&t=" + Date.now());
+  return r.json();
+}
 async function sync() {
-  if (!API || busy) return;
+  if (busy) return;
   busy = true;
   const sent = PENDING.slice();
   try {
-    const r = sent.length
-      ? await fetch(API, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify({ ops:sent }) })
-      : await fetch(API + "?t=" + Date.now());
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || "not ok");
-    PENDING = PENDING.filter(p => !sent.includes(p));   // anything changed meanwhile stays queued
-    store.set("esv:pending", PENDING);
-    DONE = Object.fromEntries(j.done.map(d => [d.id, d.date || today()]));
-    PENDING.forEach(applyLocal);
-    store.set("esv:done", DONE);
-    syncState = "ok";
+    const j = await call(sent.length || !KEY ? { key:KEY, ops:sent } : null);
+    if (!j.ok && (j.error === "no-passphrase" || j.error === "wrong-passphrase")) {
+      lockState = j.error === "no-passphrase" ? "choose" : "enter";
+      if (KEY && j.error === "wrong-passphrase") { KEY = ""; store.del("esv:key"); lockError = "That passphrase no longer works. Enter the current one."; }
+      syncState = "ok";
+    } else {
+      if (!j.ok) throw new Error(j.error || "not ok");
+      lockState = "ok";
+      PENDING = PENDING.filter(p => !sent.includes(p));
+      store.set("esv:ops", PENDING);
+      DATA = { notes:j.notes, sermons:j.sermons }; SIDX = null;
+      PENDING.forEach(applyLocal);
+      store.set("esv:data", DATA);
+      syncState = "ok";
+    }
   } catch (err) {
     syncState = navigator.onLine ? "error" : "offline";
-    // first visit on this device and no Sheet: show the plan anyway; anything
-    // marked now stays queued and is merged in once the Sheet answers
-    if (!DONE) DONE = {};
   }
   busy = false;
   render();
-  if (PENDING.length && syncState === "ok") sync();
+  if (PENDING.length && syncState === "ok" && lockState === "ok") sync();
 }
-["online", "focus", "pageshow"].forEach(ev => addEventListener(ev, sync));
-document.addEventListener("visibilitychange", () => { if (!document.hidden) sync(); });
-setInterval(() => { if (!document.hidden) sync(); }, 120000);
+async function unlock(pass, confirm) {
+  lockError = "";
+  if (lockState === "choose") {
+    if (pass.length < 6) { lockError = "Use at least 6 characters."; return render(); }
+    if (pass !== confirm) { lockError = "The two don't match."; return render(); }
+  }
+  try {
+    const j = lockState === "choose" ? await call({ claim:pass, ops:[] }) : await (KEY = pass, call(null));
+    if (!j.ok) { KEY = ""; lockError = j.error === "wrong-passphrase" ? "That's not the passphrase." : "Couldn't unlock: " + (j.error || "unknown error"); return render(); }
+    KEY = pass; store.set("esv:key", KEY);
+    lockState = "ok"; DATA = { notes:j.notes, sermons:j.sermons }; SIDX = null;
+    PENDING.forEach(applyLocal); store.set("esv:data", DATA);
+    render(); if (PENDING.length) sync();
+  } catch { KEY = ""; lockError = "Couldn't reach the Sheet. Check your connection."; render(); }
+}
+["online", "focus", "pageshow"].forEach(ev => addEventListener(ev, () => { if (KEY) sync(); }));
+document.addEventListener("visibilitychange", () => { if (!document.hidden && KEY) sync(); });
+setInterval(() => { if (!document.hidden && KEY) sync(); }, 120000);
 
-/* ---------- pieces ---------- */
-// one reading: ✓, "Day 14" (blank for a brown optional reading), the passage
-// linked to esv.org, its theme, and the date it was marked read
-function row(x, extra = "") {
-  const done = isDone(x.id), label = x.day ? `Day ${x.day}` : x.label;
-  return `<li class="it${x.day ? "" : " opt"}${done ? " done" : ""}${extra}" id="r-${esc(x.id)}">
-    <button class="tick" data-act="tick" data-id="${esc(x.id)}" aria-pressed="${done}" aria-label="${done ? "Un-mark" : "Mark"} ${esc(label)} read">✓</button>
-    <span class="dn">${x.day ? "Day " + x.day : ""}</span>
-    <a class="rd" href="${esvUrl(x.q)}" target="_blank" rel="noopener">${esc(x.label)}</a>
-    <span class="th" title="${esc(tip(x))}">${esc(x.theme)}</span>
-    <span class="when">${done ? fmt(DONE[x.id]) : ""}</span></li>`;
-}
-// hover text for a theme: the theme itself, then the first draft's note
-// (its WCF references and cross-references), which the app keeps out of sight
-const tip = x => x.note && x.note !== x.theme ? `${x.theme}\n\nOriginal note: ${x.note}` : x.theme;
-const list = (xs, wide) => `<ol class="list${wide ? " wide" : ""}">${xs.join("")}</ol>`;
-const STAR = `<span class="star">*</span>`;
-function progress() {
-  const d = M.days.filter(x => isDone(x.id)).length, s = M.items.filter(x => !x.day && isDone(x.id)).length;
-  const nx = nextDay();
-  return `<div class="prog"><div class="prog-top"><b>${nx ? `Day ${nx.day} of 365` : "Finished"}</b>
-    <span>${d} of 365 read${ui.sup ? ` · ${s} of ${M.nSup} ${STAR}` : ""}</span></div>
-    <div class="bar"><i style="width:${(d / 365 * 100).toFixed(1)}%"></i></div></div>`;
-}
-
-/* ---------- Next: the first unread day and its * readings (left), what follows (right) ---------- */
-function vNext() {
-  const nx = nextDay();
-  if (!nx) return progress() + `<div class="done-all"><b>You've read the whole plan</b><span class="th">All 365 days are marked read.</span></div>`;
-  let left = "";
-  // * readings left open on the day just before, so marking a day first doesn't hide them
-  const prev = M.days.find(d => d.day === nx.day - 1);
-  const leftover = ui.sup && prev ? (M.supsOf[prev.id] || []).filter(x => !isDone(x.id)) : [];
-  if (leftover.length) left += `<section><p class="label">${STAR} Still open from Day ${prev.day}</p>${list(leftover.map(x => row(x)))}</section>`;
-  left += `<section class="next">
-    <div class="kicker">Group ${nx.g.n} · ${esc(nx.g.title)}</div>
-    <div class="dayno">Day ${nx.day}</div>
-    <a class="big-rd" href="${esvUrl(nx.q)}" target="_blank" rel="noopener">${esc(nx.label)}<span class="go">Read in ESV ↗</span></a>
-    <p class="theme" title="${esc(tip(nx))}">${esc(nx.theme)}</p>
-    <button class="mark" data-act="tick" data-id="${nx.id}">✓ Mark Day ${nx.day} read</button></section>`;
-  const sups = ui.sup ? M.supsOf[nx.id] || [] : [];
-  if (sups.length) left += `<section><p class="label">${STAR} With this day</p>${list(sups.map(x => row(x)))}</section>`;
-  const soon = M.days.filter(d => d.day > nx.day && !isDone(d.id)).slice(0, 5);
-  const right = soon.length ? `<section><p class="label">Coming up</p>${list(soon.map(x => row(x)))}</section>` : "";
-  return progress() + `<div class="cols"><div class="col">${left}</div><div class="col">${right}</div></div>`;
-}
-
-/* ---------- Plan: every group, the one holding the next day open ---------- */
-function vPlan() {
-  const nx = nextDay();
-  const groups = PLAN.groups.map(g => {
-    const its = M.items.filter(x => x.g === g), ds = its.filter(x => x.day), n = ds.filter(x => isDone(x.id)).length;
-    const open = ui.open.has(g.n);
-    const shown = ui.sup ? its : ds;
-    return `<section class="grp"><button class="grp-h" data-act="grp" data-v="${g.n}" aria-expanded="${open}">
-        <span class="t"><span class="n">${g.n}</span>${esc(g.title)}</span>
-        <span class="c${n === ds.length ? " full" : ""}">${n === ds.length ? "✓ " : ""}${n}/${ds.length}</span>
-        <span class="books">${(ui.sup ? g.books : g.dayBooks).map(esc).join(" · ")}</span>
-        <span class="days">Days ${g.from}–${g.to}</span>
-        <span class="bar"><i style="width:${(n / ds.length * 100).toFixed(1)}%"></i></span></button>
-      ${open ? `<div class="grp-b">${list(shown.map(x => row(x, nx && x.id === nx.id ? " next-row" : "")), true)}</div>` : ""}</section>`;
-  }).join("");
-  return progress() + `<div class="planbar"><div class="seg small" role="group" aria-label="Optional (*) readings">
-      <button data-act="sup" data-v="1" aria-pressed="${ui.sup}">Show</button><button data-act="sup" data-v="0" aria-pressed="${!ui.sup}">Hide</button></div></div>`
-    + groups;
-}
-
-/* ---------- render ---------- */
-const $top = document.getElementById("top"), $screen = document.getElementById("screen");
-function render() {
+/* ---------- top ---------- */
+function vHead() {
   const waiting = PENDING.length ? ` · ${PENDING.length} to save` : "";
   const badge = syncState === "offline" ? `<span class="sync">Offline${waiting}</span>`
     : syncState === "error" ? `<span class="sync bad">Couldn't reach the Sheet${waiting}</span>` : "";
-  $top.innerHTML = `<span class="brand">Reading Plan</span><div class="top-r">${badge}<div class="seg" role="group"><button data-act="tab" data-v="next" aria-pressed="${ui.tab === "next"}">Next</button><button data-act="tab" data-v="plan" aria-pressed="${ui.tab === "plan"}">Plan</button></div></div>`;
-  if (!PLAN || !DONE) {
-    $screen.innerHTML = `<p class="empty">${PLAN === false ? "Couldn't load the plan. Check your connection." : "Loading…"}</p>`;
-    return;
+  const opts = sel => PLAN.groups.map((x, i) => `<option value="${i}"${sel === i ? " selected" : ""}>${x.n} · ${esc(x.title)}</option>`).join("");
+  const btn = `<button class="sermbtn" data-act="sermons" aria-pressed="${ui.view === "sermons"}"><i></i>Sermons</button>`;
+  if (ui.view === "sermons") return `<div><div class="h-title">Sermons</div><div class="books">Each sermon shows on the passages in its Verses</div></div>
+    <div class="h-right">${badge}<label class="pick small"><select id="section" aria-label="Go to a section"><option value="" selected>Back to a section…</option>${opts(-1)}</select></label>${btn}</div>`;
+  const G = PLAN.groups[ui.g];
+  return `<div><label class="pick"><select id="section" aria-label="Section">${opts(ui.g)}</select></label>
+      <div class="books">${G.books.map(esc).join(" · ")}</div></div>
+    <div class="h-right">${badge}<span class="meta">Days ${G.from}–${G.to}</span>${btn}</div>`;
+}
+
+/* ---------- a section: the selected passage (left), every passage (right) ---------- */
+function noteCard(n) {
+  if (ui.editNote === n.id) return `<article class="note" style="--c:var(--${n.kind})">${composer(n)}</article>`;
+  return `<article class="note" style="--c:var(--${n.kind})"><div class="note-top"><span class="kind">${n.kind}</span><span class="ref">${esc(n.ref)}</span>${n.written ? `<span>· ${short(n.written)}</span>` : ""}
+      <span class="acts"><button data-act="editnote" data-id="${esc(n.id)}">Edit</button><button data-act="delnote" data-id="${esc(n.id)}">Delete</button></span></div>
+    ${n.kind === "verse" ? `<blockquote>${esc(n.text)}</blockquote>` : `<p>${esc(n.text)}</p>`}</article>`;
+}
+function composer(n) {
+  const x = M.byId[ui.sel], kind = n ? n.kind : ui.kind;
+  const ref = n ? n.ref : kind === "verse" ? x.label.split(/[–;+]/)[0].trim().replace(/(\d+)$/, "$1:") : x.label.replace(/ \+ .*/, "");
+  return `<div class="compose">
+    ${n ? "" : `<div class="chips">
+      <button class="chip" data-act="kind" data-v="verse" aria-pressed="${kind === "verse"}"><i style="background:var(--verse)"></i>Verse</button>
+      <button class="chip" data-act="kind" data-v="note" aria-pressed="${kind === "note"}"><i style="background:var(--note)"></i>Note</button>
+      <button class="linkbtn" data-act="newsermon">+ Sermon on this passage</button></div>`}
+    <textarea id="${n ? "e-text" : "n-text"}" placeholder="${kind === "verse" ? "The verse, or why it stands out" : "Your thoughts on this passage"}">${n ? esc(n.text) : esc(ui.draft || "")}</textarea>
+    <div class="row2"><label class="field">${kind === "verse" ? "Verse" : "Passage"} <input id="${n ? "e-ref" : "n-ref"}" value="${esc(ref)}"></label>
+      ${n ? `<button class="ghost" data-act="canceledit">Cancel</button><button class="save" data-act="saveedit" data-id="${esc(n.id)}">Save</button>`
+          : `<button class="save" data-act="savenote">Save</button>`}</div></div>`;
+}
+function vLock(where) {
+  if (lockState === "unknown") return `<p class="empty">Checking the Sheet…</p>`;
+  const choose = lockState === "choose";
+  return `<form class="lock" id="lockform">
+    <b>${choose ? "Choose a passphrase" : "Enter your passphrase"}</b>
+    <p>${choose ? `Your ${where} are kept private in your Google Sheet. Pick a passphrase you'll remember (at least 6 characters). You'll type it once on each device.`
+                : `Type the passphrase you chose for your notes. This device will remember it.`}</p>
+    <input type="password" id="pass" autocomplete="${choose ? "new-password" : "current-password"}" placeholder="Passphrase">
+    ${choose ? `<input type="password" id="pass2" autocomplete="new-password" placeholder="Type it again">` : ""}
+    ${lockError ? `<span class="err">${esc(lockError)}</span>` : ""}
+    <div class="row2"><button class="save" type="submit">${choose ? "Set passphrase" : "Unlock"}</button></div></form>`;
+}
+function vSection() {
+  const G = PLAN.groups[ui.g];
+  if (!M.byId[ui.sel] || M.byId[ui.sel].gi !== ui.g) ui.sel = firstOf(ui.g);
+  const x = M.byId[ui.sel];
+  let notesHtml;
+  if (lockState !== "ok") notesHtml = vLock("notes");
+  else {
+    const mine = notesOf(ui.sel);
+    const v = mine.filter(n => n.kind === "verse").sort((a, b) => verseKey(a.ref) - verseKey(b.ref));
+    const n = mine.filter(n => n.kind === "note").sort((a, b) => (a.written || "").localeCompare(b.written || ""));
+    const s = sermonsOn(ui.sel).map(m => `<a class="slink" href="#" data-act="opensermon" data-id="${esc(m.id)}"><div>
+        <small>Sermon${m.date ? " · " + fmt(m.date) : ""}${m.pastor ? " · " + esc(m.pastor) : ""}</small><b>${esc(m.title || "Untitled sermon")}</b><small>${esc(m.verses)}</small></div><span class="arrow">Open →</span></a>`);
+    const all = [...v.map(noteCard), ...n.map(noteCard), ...s];
+    notesHtml = composer() + `<p class="notes-h">Notes on this passage</p><div class="notes">${all.length ? all.join("") : `<p class="empty">No notes on this passage yet.</p>`}</div>`;
   }
-  $screen.innerHTML = ui.tab === "plan" ? vPlan() : vNext();
+  const its = ui.all ? G.items : G.items.filter(i => i.day);
+  return `<div class="cols">
+    <section class="desk">
+      <div>
+        <div class="kicker${x.day ? "" : " opt"}">${x.day ? "Day " + x.day : "Optional reading"}</div>
+        <a class="big" href="${esvUrl(x.q)}" target="_blank" rel="noopener"><span class="lbl">${esc(x.label)}</span><span class="go">Read in ESV ↗</span></a>
+        <p class="theme" title="${esc(tip(x))}">${esc(x.theme)}</p></div>
+      ${notesHtml}
+    </section>
+    <section>
+      <div class="listbar"><span>${its.length} readings</span>
+        <div class="seg"><button data-act="all" data-v="1" aria-pressed="${ui.all}">All Chapters</button><button data-act="all" data-v="0" aria-pressed="${!ui.all}">Reading Plan</button></div></div>
+      <ol>${its.map(i => { const c = lockState === "ok" ? countOn(i.id) : 0; return `<li class="it${i.day ? "" : " opt"}${i.id === ui.sel ? " sel" : ""}" data-act="pick" data-id="${esc(i.id)}">
+        <span class="dn">${i.day ? "Day " + i.day : ""}</span><span class="rd">${esc(i.label)}</span>${c ? `<span class="cnt" title="${c} note${c > 1 ? "s" : ""}"><i></i>${c}</span>` : "<span></span>"}
+        <span class="th" title="${esc(tip(i))}">${esc(i.theme)}</span></li>`; }).join("")}</ol>
+    </section></div>`;
 }
-// Plan always opens with every group collapsed (Kyle's call)
-function go(tab) { ui.tab = tab; if (tab === "plan") ui.open = new Set(); scrollTo(0, 0); toast(null); render(); }
 
-/* toast with Undo after marking something read */
-const $toast = document.getElementById("toast");
-function toast(text, undo) {
-  clearTimeout(toast.t);
-  if (!text) { $toast.hidden = true; return; }
-  $toast.innerHTML = `<span>${esc(text)}</span><button type="button">Undo</button>`;
-  $toast.querySelector("button").onclick = () => { toast(null); undo(); };
-  $toast.hidden = false;
-  toast.t = setTimeout(() => { $toast.hidden = true; }, 6000);
+/* ---------- Sermons page ---------- */
+function sermonDoc(s) {
+  const on = passagesFor(s.verses);
+  return `<article class="sdoc">
+    <div class="sdoc-top"><div>${s.series ? `<div class="ser">${esc(s.series)}</div>` : ""}<h2>${esc(s.title || "Untitled sermon")}</h2></div>
+      <button class="ghost" data-act="editsermon">Edit</button></div>
+    <dl class="facts">${s.date ? `<dt>Date</dt><dd>${fmt(s.date)}</dd>` : ""}
+      ${s.pastor ? `<dt>Pastor</dt><dd>${esc(s.pastor)}</dd>` : ""}
+      ${s.verses ? `<dt>Verses</dt><dd><a href="${esvUrl(s.verses)}" target="_blank" rel="noopener">${esc(s.verses)} ↗</a>
+        ${on.length ? `<span class="on"> · shows on ${on.map(x => `<a href="#" data-act="goto" data-id="${esc(x.id)}">${x.day ? "Day " + x.day : esc(x.label)}</a>`).join(", ")}</span>` : `<span class="on"> · not matched to a passage</span>`}</dd>` : ""}</dl>
+    ${s.summary ? `<div class="summary"><h4>Summary</h4><p>${esc(s.summary)}</p></div>` : ""}
+    ${(s.sections || []).map(sec => `<div class="sec">${sec.title ? `<h4>${esc(sec.title)}</h4>` : ""}<ul>${(sec.points || []).map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}
+  </article>`;
+}
+function sermonForm(s) {
+  const secs = s.sections?.length ? s.sections : [{ title:"", points:[] }];
+  const series = [...new Set((DATA?.sermons || []).map(x => x.series.trim()).filter(Boolean))];
+  return `<article class="sdoc"><div class="form" id="sform">
+    <div class="grid2"><label>Date<input type="date" id="f-date" value="${esc(s.date || "")}"></label>
+      <label>Series<input id="f-series" list="serieslist" value="${esc(s.series)}" placeholder="leave blank if it isn't part of one"></label></div>
+    <datalist id="serieslist">${series.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
+    <label>Title<input id="f-title" value="${esc(s.title)}"></label>
+    <div class="grid2"><label>Pastor<input id="f-pastor" value="${esc(s.pastor)}"></label>
+      <label>Verses (decides which passages it shows on)<input id="f-verses" value="${esc(s.verses)}" placeholder="e.g. 1 Peter 4:1–11"></label></div>
+    <label>Summary<textarea id="f-summary">${esc(s.summary)}</textarea></label>
+    <div id="f-secs" style="display:grid;gap:10px">${secs.map((sec, i) => secEdit(i + 1, sec)).join("")}</div>
+    <button class="addsec" data-act="addsec">+ Add section</button>
+    <div class="row2">${ui.fresh === s.id ? "" : `<button class="danger" data-act="delsermon">Delete sermon</button>`}
+      <button class="ghost" data-act="cancelsermon">Cancel</button><button class="save" data-act="savesermon">Save sermon</button></div></div></article>`;
+}
+const secEdit = (n, sec = { title:"", points:[] }) => `<div class="secedit"><label>Section ${n}<input class="f-st" value="${esc(sec.title)}" placeholder="e.g. ${n}. Heading"></label>
+  <label>Points, one per line<textarea class="f-sp">${esc((sec.points || []).join("\n"))}</textarea></label>
+  <button class="x" data-act="dropsec">Remove section</button></div>`;
+function vSermons() {
+  if (lockState !== "ok") return `<div class="sgrid"><div></div>${vLock("sermon notes")}</div>`;
+  const groups = sermonGroups(), flat = groups.flat();
+  const s = ui.editing || flat.find(x => x.id === ui.ss) || flat[0];
+  const list = groups.map(g => (g[0].series.trim() ? `<div class="series">${esc(g[0].series)}</div>` : "") +
+    g.map(x => `<div class="sitem${s && x.id === s.id ? " sel" : ""}" data-act="opensermon" data-id="${esc(x.id)}"><small>${fmt(x.date) || "No date"}</small><b>${esc(x.title || "Untitled sermon")}</b>
+      <span>${esc(x.verses)}${x.pastor ? " · " + esc(x.pastor) : ""}</span></div>`).join("")).join("");
+  return `<div class="sgrid">
+    <div class="slist"><button class="newbtn" data-act="newsermon2">+ New sermon</button>${list}</div>
+    <div>${ui.editing ? sermonForm(ui.editing) : s ? sermonDoc(s) : `<p class="empty">No sermons yet. Use “+ New sermon”, or “+ Sermon on this passage” from any passage.</p>`}</div></div>`;
 }
 
+/* ---------- render ---------- */
+const $head = document.getElementById("head"), $main = document.getElementById("main");
+function render() {
+  if (!PLAN) { $main.innerHTML = `<p class="loading">${PLAN === false ? "Couldn't load the plan. Check your connection." : "Loading…"}</p>`; return; }
+  const keep = document.activeElement && ["n-text", "e-text", "e-ref", "n-ref", "pass", "pass2"].includes(document.activeElement.id) ? document.activeElement.id : null;
+  if (document.getElementById("n-text")) ui.draft = ui.view === "section" ? document.getElementById("n-text").value : ui.draft;
+  if (document.getElementById("sform")) return;          // never wipe a sermon being edited; it redraws on Save or Cancel
+  $head.innerHTML = vHead();
+  $main.innerHTML = ui.view === "sermons" ? vSermons() : vSection();
+  if (keep && document.getElementById(keep)) document.getElementById(keep).focus();
+}
+function readSermonForm(s) {
+  const v = id => document.getElementById(id).value.trim();
+  return { ...s, date:v("f-date"), series:v("f-series"), title:v("f-title"), pastor:v("f-pastor"), verses:v("f-verses"), summary:v("f-summary"),
+    sections:[...document.querySelectorAll(".secedit")].map(d => ({ title:d.querySelector(".f-st").value.trim(),
+      points:d.querySelector(".f-sp").value.split("\n").map(p => p.replace(/^\s*[-•*]\s*/, "").trim()).filter(Boolean) })).filter(x => x.title || x.points.length) };
+}
+// Leaving a sermon form open asks first, since unsaved edits would be lost.
+function go(view, extra = {}) {
+  const form = document.getElementById("sform");
+  if (form && !confirm("Leave without saving this sermon?")) return false;
+  if (form) form.remove();
+  Object.assign(ui, { view, editing:null, fresh:null, editNote:null }, extra);
+  if (ui.view === "section") ui.per[ui.g] = ui.sel;
+  remember(); render(); scrollTo(0, 0);
+  return true;
+}
+// open a section on the passage last open there (else its first plan day)
+const openSection = (g, sel) => go("section", { g, sel:sel || ui.per[g] || firstOf(g), draft:"" });
+
+document.addEventListener("change", ev => {
+  if (ev.target.id === "section" && ev.target.value !== "" && !openSection(+ev.target.value)) ev.target.value = ui.view === "sermons" ? "" : ui.g;
+});
+document.addEventListener("submit", ev => {
+  if (ev.target.id !== "lockform") return;
+  ev.preventDefault();
+  unlock(document.getElementById("pass").value, document.getElementById("pass2")?.value);
+});
 document.addEventListener("click", ev => {
   const el = ev.target.closest("[data-act]"); if (!el) return;
   const { act, id, v } = el.dataset;
   switch (act) {
-    case "tab": return go(v);
-    case "tick": return toggle(id);
-    case "sup": ui.sup = v === "1"; store.set("esv:sup", ui.sup); break;
-    case "grp": { const n = +v; ui.open.has(n) ? ui.open.delete(n) : ui.open.add(n); break; }
+    case "pick": ui.sel = id; ui.per[ui.g] = id; ui.editNote = null; ui.draft = ""; remember(); return render();
+    case "all": ui.all = v === "1"; remember(); return render();
+    case "kind": ui.kind = v; return render();
+    case "sermons": ev.preventDefault(); return ui.view === "sermons" ? openSection(ui.g, ui.sel) : go("sermons");
+    case "opensermon": ev.preventDefault(); return go("sermons", { ss:id });
+    case "goto": ev.preventDefault(); return openSection(M.byId[id].gi, id);
+    case "savenote": {
+      const text = document.getElementById("n-text").value.trim(); if (!text) return;
+      ui.draft = ""; document.getElementById("n-text").value = "";
+      return change({ op:"note", note:{ id:newId("n"), passage:ui.sel, kind:ui.kind, ref:document.getElementById("n-ref").value.trim(), text, written:today() } });
+    }
+    case "editnote": ui.editNote = id; return render();
+    case "canceledit": ui.editNote = null; return render();
+    case "saveedit": {
+      const n = DATA.notes.find(x => x.id === id), text = document.getElementById("e-text").value.trim(); if (!n || !text) return;
+      ui.editNote = null;
+      return change({ op:"note", note:{ ...n, text, ref:document.getElementById("e-ref").value.trim() } });
+    }
+    case "delnote": if (confirm("Delete this note? This can't be undone.")) change({ op:"delnote", id }); return;
+    case "newsermon": case "newsermon2": {
+      const verses = act === "newsermon" ? M.byId[ui.sel].label.replace(/ \+ .*/, "") : "";
+      const s = { id:newId("s"), date:today(), series:"", title:"", pastor:"", verses, summary:"", sections:[] };
+      return go("sermons", { ss:s.id }) && (ui.editing = s, ui.fresh = s.id, render());
+    }
+    case "editsermon": { const s = DATA.sermons.find(x => x.id === ui.ss) || sermonGroups().flat()[0]; ui.editing = { ...s }; ui.fresh = null; $head.innerHTML = vHead(); $main.innerHTML = vSermons(); return; }
+    case "addsec": { const box = document.getElementById("f-secs"); box.insertAdjacentHTML("beforeend", secEdit(box.children.length + 1)); return; }
+    case "dropsec": el.closest(".secedit").remove(); return;
+    case "cancelsermon": { const back = ui.fresh === ui.editing?.id ? null : ui.editing?.id; ui.editing = null; ui.fresh = null; ui.ss = back; document.getElementById("sform").remove(); return render(); }
+    case "savesermon": {
+      const s = readSermonForm(ui.editing);
+      if (!s.title && !s.summary && !s.sections.length) { alert("Give the sermon a title, a summary, or a section first."); return; }
+      ui.editing = null; ui.fresh = null; ui.ss = s.id; remember();
+      document.getElementById("sform").remove();
+      return change({ op:"sermon", sermon:s });
+    }
+    case "delsermon": {
+      if (!confirm("Delete this sermon? This can't be undone.")) return;
+      const sid = ui.editing.id; ui.editing = null; ui.ss = null;
+      document.getElementById("sform").remove();
+      return change({ op:"delsermon", id:sid });
+    }
   }
-  render();
 });
 
-/* swipe sideways to switch tab: a quick stroke, mostly across */
-let touch = null;
-document.addEventListener("touchstart", ev => {
-  touch = ev.touches.length === 1 ? { x:ev.touches[0].clientX, y:ev.touches[0].clientY, t:Date.now() } : null;
-}, { passive:true });
-document.addEventListener("touchend", ev => {
-  if (!touch || !PLAN) return;
-  const p = ev.changedTouches[0], dx = p.clientX - touch.x, dy = p.clientY - touch.y, quick = Date.now() - touch.t < 700;
-  touch = null;
-  if (!quick || Math.abs(dx) < 60 || Math.abs(dx) < 2 * Math.abs(dy)) return;
-  if (dx < 0 && ui.tab === "next") go("plan");
-  else if (dx > 0 && ui.tab === "plan") go("next");
-}, { passive:true });
-
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-if (!API && !DONE) DONE = {};      // no Sheet yet: start empty on this device
-render();
-fetch("plan.json").then(r => r.json()).then(p => { PLAN = p; model(); render(); })
-  .catch(() => { PLAN = false; render(); });
-sync().then(() => { if (!DONE && syncState === "ok") { DONE = {}; render(); } });
+store.del("esv:pending"); store.del("esv:done");        // the old check marks: the app no longer tracks reading
+fetch("plan.json").then(r => r.json()).then(p => {
+  PLAN = p; model();
+  if (!(ui.g >= 0 && ui.g < PLAN.groups.length)) ui.g = 0;
+  render(); sync();
+}).catch(() => { PLAN = false; render(); });
 </script>
 </body>
 </html>

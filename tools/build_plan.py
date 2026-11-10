@@ -161,7 +161,17 @@ def main():
         g["books"] = book_list(it["reading"] for it in g["items"])
         g["dayBooks"] = book_list(it["reading"] for it in g["items"] if it["day"] is not None)
 
-    plan = {"title": title, "about": about, "groups": groups}
+    # book names a person might type in a sermon's Verses ("1 Pet 4", "Psalms 23",
+    # "song of songs 2"), lowercased, mapped to the names used in each "q"
+    names = {}
+    for abbr, name in BOOKS.items():
+        names[abbr.lower()] = name
+        names[name.lower()] = name
+    names.update({"psalms": "Psalm", "pss": "Psalm", "song of songs": "Song of Solomon",
+                  "canticles": "Song of Solomon", "philem": "Philemon", "jas": "James",
+                  "rev.": "Revelation", "revelations": "Revelation"})
+
+    plan = {"title": title, "about": about, "groups": groups, "bookNames": names}
     out = ROOT / "docs" / "plan.json"
     out.write_text(json.dumps(plan, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"wrote {out.relative_to(ROOT)}: {len(groups)} groups, {len(days)} days, "
