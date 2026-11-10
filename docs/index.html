@@ -167,6 +167,12 @@ ol{list-style:none;margin:0;padding:0}
 .summary p{margin:0;color:var(--ink-2);white-space:pre-wrap}
 .sec ul{margin:0;padding-left:20px;display:grid;gap:5px}
 .sec li{line-height:1.55}
+.sec .subh{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--day);margin:12px 0 4px}
+.sec h4+.subh,.sec .subh:first-child{margin-top:2px}
+.sec ul.sub{margin-top:4px;gap:3px;list-style:circle}
+.gdiv{display:flex;align-items:center;gap:12px;font:italic 16px var(--head);color:var(--ink-2)}
+.gdiv:before,.gdiv:after{content:"";flex:1;border-top:1px solid var(--line)}
+.form label .hint{color:var(--ink-3);opacity:.8}
 .form{display:grid;gap:12px}
 .form .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form label{display:grid;gap:4px;font-size:12px;color:var(--ink-3)}
@@ -480,8 +486,28 @@ function sermonDoc(s) {
       ${s.verses ? `<dt>Verses</dt><dd><a href="${esvUrl(s.verses)}" target="_blank" rel="noopener">${esc(s.verses)} ↗</a>
         ${on.length ? `<span class="on"> · shows on ${on.map(x => `<a href="#" data-act="goto" data-id="${esc(x.id)}">${x.day ? "Day " + x.day : esc(x.label)}</a>`).join(", ")}</span>` : `<span class="on"> · not matched to a passage</span>`}</dd>` : ""}</dl>
     ${s.summary ? `<div class="summary"><h4>Summary</h4><p>${esc(s.summary)}</p></div>` : ""}
-    ${(s.sections || []).map(sec => `<div class="sec">${sec.title ? `<h4>${esc(sec.title)}</h4>` : ""}<ul>${(sec.points || []).map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}
+    ${(s.sections || []).map(secHtml).join("")}
   </article>`;
+}
+// A section's points: "# x" is a small brown sub-heading, "> x" nests under the
+// point above it, and a section with a title but no points is a divider
+// between sections (a heading over a group of them).
+function secHtml(sec) {
+  const pts = sec.points || [];
+  if (sec.title && !pts.length) return `<div class="gdiv">${esc(sec.title)}</div>`;
+  let out = "", items = [], cur = null;
+  const flush = () => {
+    if (cur) items.push(cur), cur = null;
+    if (items.length) out += `<ul>${items.map(x => `<li>${esc(x.t)}${x.sub.length ? `<ul class="sub">${x.sub.map(y => `<li>${esc(y)}</li>`).join("")}</ul>` : ""}</li>`).join("")}</ul>`;
+    items = [];
+  };
+  for (const p of pts) {
+    if (p.startsWith("#")) { flush(); out += `<div class="subh">${esc(p.replace(/^#+\s*/, ""))}</div>`; }
+    else if (p.startsWith(">") && cur) cur.sub.push(p.replace(/^>+\s*/, ""));
+    else { if (cur) items.push(cur); cur = { t:p.replace(/^>+\s*/, ""), sub:[] }; }
+  }
+  flush();
+  return `<div class="sec">${sec.title ? `<h4>${esc(sec.title)}</h4>` : ""}${out}</div>`;
 }
 function sermonForm(s) {
   const secs = s.sections?.length ? s.sections : [{ title:"", points:[] }];
@@ -501,7 +527,7 @@ function sermonForm(s) {
       <button class="ghost" data-act="cancelsermon">Cancel</button><button class="save" data-act="savesermon">Save sermon</button></div></div></article>`;
 }
 const secEdit = (n, sec = { title:"", points:[] }) => `<div class="secedit"><label>Section ${n}<input class="f-st" value="${esc(sec.title)}" placeholder="e.g. ${n}. Heading"></label>
-  <label>Points, one per line<textarea class="f-sp">${esc((sec.points || []).join("\n"))}</textarea></label>
+  <label>Points, one per line <span class="hint">· start a line with # for a sub-heading, or &gt; to tuck it under the line above · a section with a title and no points becomes a divider</span><textarea class="f-sp">${esc((sec.points || []).join("\n"))}</textarea></label>
   <button class="x" data-act="dropsec">Remove section</button></div>`;
 function vSermons() {
   if (lockState !== "ok") return `<div class="sgrid"><div></div>${vLock("sermon notes")}</div>`;
