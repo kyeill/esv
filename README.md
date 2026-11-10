@@ -29,9 +29,8 @@ check-off plan**: there is no read tracking at all, no progress bar, no title.
 - **A section, right:** every passage in it (no check boxes). Plan days are
   brown; optional readings ("Supplementary" in the plan, never called that on
   screen) are grey with the day column blank. Toggle **All Chapters / Reading
-  Plan** (starts on Reading Plan). A count shows on passages with notes. Themes are one line on desktop, even in
-  a narrowed window (they wrap only on a touch phone); the first draft's note
-  on hover.
+  Plan** (starts on Reading Plan). A count shows on passages with notes. Themes wrap onto a second line when
+  there isn't room (never cut off); the first draft's note on hover.
 - **A section, left:** the selected passage (linked to esv.org, with its theme;
   hover the theme for **Edit** to rewrite it, kept in the Themes tab, with
   "Use the plan's" to go back),
@@ -171,5 +170,6 @@ submit from a test would set Kyle's passphrase.
   `curl` can see the new file while the browser still gets the old one.
 - **A `<select>` is as wide as its longest option**, which pushed the Sermons
   page 16px past a phone screen until `.pick.small select` got a width cap.
-- **Themes are one line, always** (cut with "…", full text on hover). Add-on
+- **Themes wrap rather than cut off** (his call, 2026-11-10; keep them under
+  ~65 characters so they fit one line at full width). Add-on
   psalms ("+ Ps 8") are left out of the theme on purpose (Kyle's call).
