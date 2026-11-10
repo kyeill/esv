@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Desktop first (Kyle's main screen), still usable on a phone. Warm dark,
    serif for scripture and headings, Inter for everything else.
@@ -112,8 +112,9 @@ textarea::placeholder,input::placeholder{color:var(--ink-3)}
 @media (hover:none){.note-top .acts{opacity:1}}
 .acts button{border:0;background:none;padding:0;color:var(--ink-3);font-size:12px;font-weight:600}
 .acts button:hover{color:var(--ink)}
-.note p{margin:0;font-size:14.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
-.note blockquote{margin:0;font:400 15.5px/1.5 var(--head);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}
+.note p{margin:0;font-size:14px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+/* a saved verse: same font and size as notes, in a softer grey (his pick, 2026-11-10) */
+.note blockquote{margin:0;font-size:14px;line-height:1.55;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
 .note .compose{margin-top:4px}
 a.slink{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);border-left:3px solid var(--sermon);border-radius:10px;padding:10px 12px;background:var(--bg)}
 a.slink:hover{border-color:var(--ink-3);border-left-color:var(--sermon)}
