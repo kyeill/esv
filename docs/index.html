@@ -136,7 +136,9 @@ ol{list-style:none;margin:0;padding:0}
 /* Sermons page */
 .sgrid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:28px;align-items:start;padding-top:20px}
 @media (max-width:820px){.sgrid{grid-template-columns:1fr}}
-.slist{display:grid;gap:6px}
+.slist{display:grid;gap:6px;align-content:start}
+/* desktop: the sermon list scrolls on its own, beside the sermon */
+@media (min-width:821px){.slist{position:sticky;top:84px;max-height:calc(100vh - 150px);overflow-y:auto;padding-right:6px;scrollbar-width:thin}}
 .series{border:0;background:none;width:100%;text-align:left;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:10px 0 0;padding:6px 4px;border-radius:8px;display:flex;gap:8px;align-items:center}
 .series:hover{background:var(--surface);color:var(--ink)}
 .series span{width:10px;color:var(--ink-3);font-size:12px}
@@ -190,6 +192,7 @@ ol{list-style:none;margin:0;padding:0}
   .sdoc{padding:18px 16px}
   .sdoc h2{font-size:24px}
   .form .grid2{grid-template-columns:1fr}
+  .theme,.th{white-space:normal;overflow:visible}   /* themes wrap on a phone (one line on desktop) */
   .row2 .save{margin-left:0}
   .row2:has(.danger) .save{margin-left:auto}
 }
@@ -225,10 +228,11 @@ let lockError = "";
 // what was on screen last time (this device only)
 const ui = {
   view:store.get("esv:view", "section"), g:store.get("esv:g", 0), sel:store.get("esv:sel", null),
-  ss:store.get("esv:ss", null), all:store.get("esv:all", true), per:store.get("esv:per", {}),   // per: last passage open in each section
+  ss:store.get("esv:ss", null), all:store.get("esv:allChapters", false), per:store.get("esv:per", {}),   // per: last passage open in each section
   kind:"verse", editing:null, fresh:null, draft:"", editNote:null,   // fresh: id of a new sermon not saved yet; draft: unsaved note text
 };
-const remember = () => ["view", "g", "sel", "ss", "all", "per"].forEach(k => store.set("esv:" + k, ui[k]));
+// "all" is saved as esv:allChapters (default Reading Plan, his call 2026-11-10; the old esv:all is ignored)
+const remember = () => { ["view", "g", "sel", "ss", "per"].forEach(k => store.set("esv:" + k, ui[k])); store.set("esv:allChapters", ui.all); };
 
 /* ---------- small helpers ---------- */
 const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -386,9 +390,11 @@ function vHead() {
   const badge = syncState === "offline" ? `<span class="sync">Offline${waiting}</span>`
     : syncState === "error" ? `<span class="sync bad">Couldn't reach the Sheet${waiting}</span>` : "";
   const opts = sel => PLAN.groups.map((x, i) => `<option value="${i}"${sel === i ? " selected" : ""}>${x.n} · ${esc(x.title)}</option>`).join("");
-  const btn = `<button class="sermbtn" data-act="sermons" aria-pressed="${ui.view === "sermons"}"><i></i>Sermons</button>`;
-  if (ui.view === "sermons") return `<div><div class="h-title">Sermons</div><div class="books">Each sermon shows on the passages in its Verses</div></div>
-    <div class="h-right">${badge}<label class="pick small"><select id="section" aria-label="Go to a section"><option value="" selected>Back to a section…</option>${opts(-1)}</select></label>${btn}</div>`;
+  const btn = `<button class="sermbtn" data-act="sermons"><i></i>Sermons</button>`;
+  // on the Sermons page the one button reads "Reading" and goes back to the
+  // section and passage last open there
+  if (ui.view === "sermons") return `<div><div class="h-title">Sermons</div></div>
+    <div class="h-right">${badge}<button class="sermbtn" data-act="sermons"><i style="background:var(--accent)"></i>Reading</button></div>`;
   const G = PLAN.groups[ui.g];
   return `<div><label class="pick"><select id="section" aria-label="Section">${opts(ui.g)}</select></label>
       <div class="books">${G.books.map(esc).join(" · ")}</div></div>
@@ -438,7 +444,7 @@ function vSection() {
     const v = mine.filter(n => n.kind === "verse").sort((a, b) => verseKey(a.ref) - verseKey(b.ref));
     const n = mine.filter(n => n.kind === "note").sort((a, b) => (a.written || "").localeCompare(b.written || ""));
     const s = sermonsOn(ui.sel).map(m => `<a class="slink" href="#" data-act="opensermon" data-id="${esc(m.id)}"><div>
-        <small>Sermon${m.date ? " · " + fmt(m.date) : ""}${m.pastor ? " · " + esc(m.pastor) : ""}</small><b>${esc(m.title || "Untitled sermon")}</b><small>${esc(m.verses)}</small></div><span class="arrow">Open →</span></a>`);
+        <small>Sermon${m.date ? " · " + fmt(m.date) : ""}</small>${m.pastor ? `<small>${esc(m.pastor)}</small>` : ""}<b>${esc(m.title || "Untitled sermon")}</b><small>${esc(m.verses)}</small></div><span class="arrow">Open →</span></a>`);
     const all = [...v.map(noteCard), ...n.map(noteCard), ...s];
     notesHtml = composer() + `<p class="notes-h">Notes on this passage</p><div class="notes">${all.length ? all.join("") : `<p class="empty">No notes on this passage yet.</p>`}</div>`;
   }

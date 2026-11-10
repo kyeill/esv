@@ -23,12 +23,13 @@ check-off plan**: there is no read tracking at all, no progress bar, no title.
 
 - **Top:** the heading *is* a dropdown of the 12 sections by full name, with the
   section's books under it and "Days 1–25" on the right, then a **Sermons**
-  button. The app reopens on the last view, section and passage (per device);
+  button (on the Sermons page it reads **Reading** and goes back to the last
+  section and passage). The app reopens on the last view, section and passage (per device);
   each section remembers its last passage.
 - **A section, right:** every passage in it (no check boxes). Plan days are
   brown; optional readings ("Supplementary" in the plan, never called that on
   screen) are grey with the day column blank. Toggle **All Chapters / Reading
-  Plan**. A count shows on passages with notes. Themes are one line, the first
+  Plan** (starts on Reading Plan). A count shows on passages with notes. Themes are one line on desktop (they wrap on a phone), the first
   draft's note on hover.
 - **A section, left:** the selected passage (linked to esv.org, with its theme),
   a box to add a **Verse** or **Note**, and that passage's notes only, always in
