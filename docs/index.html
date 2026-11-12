@@ -264,8 +264,8 @@ let lockError = "";
 const ui = {
   view:store.get("esv:view", "section"), g:store.get("esv:g", 0), sel:store.get("esv:sel", null),
   ss:store.get("esv:ss", null), all:store.get("esv:allChapters", false), per:store.get("esv:per", {}),   // per: last passage open in each section
-  kind:"verse", editing:null, fresh:null, draft:"", editNote:null, editTheme:null, themeDraft:"",
-  sPane:"list",   // phone only: the Sermons page shows the "list" or one sermon ("doc")   // fresh: id of a new sermon not saved yet; draft: unsaved note text
+  kind:"verse", editing:null, fresh:null, draft:"", editNote:null, editTheme:null, themeDraft:"",   // fresh: id of a new sermon not saved yet; draft: unsaved note text
+  sPane:"list",   // phone only: the Sermons page shows the "list" or one sermon ("doc")
 };
 // "all" is saved as esv:allChapters (default Reading Plan, his call 2026-11-10; the old esv:all is ignored)
 const remember = () => { ["view", "g", "sel", "ss", "per"].forEach(k => store.set("esv:" + k, ui[k])); store.set("esv:allChapters", ui.all); };
@@ -603,7 +603,46 @@ function render() {
   $head.innerHTML = vHead();
   $main.innerHTML = ui.view === "sermons" ? vSermons() : vSection();
   if (keep && document.getElementById(keep)) document.getElementById(keep).focus();
+  docHistory();
 }
+
+/* Phone: an open sermon gets its own history entry, so the phone's back
+   gesture (or back button) returns to the sermon list instead of closing the
+   app. A sideways swipe on the open sermon does the same. */
+const phone = () => matchMedia("(max-width:820px)").matches;
+let docEntry = false, skipPop = false;
+function docHistory() {
+  const open = phone() && ui.view === "sermons" && ui.sPane === "doc";
+  if (open && !docEntry) { history.pushState({ esvDoc:1 }, ""); docEntry = true; }
+  else if (!open && docEntry) { docEntry = false; skipPop = true; history.back(); }
+}
+function backToList() {
+  if (docEntry) return history.back();               // popstate below does the rest
+  ui.sPane = "list"; render(); scrollTo(0, 0);
+}
+addEventListener("popstate", () => {
+  if (skipPop) { skipPop = false; return; }
+  if (!docEntry) return;
+  docEntry = false;
+  if (ui.view !== "sermons" || ui.sPane !== "doc") return;
+  const form = document.getElementById("sform");
+  if (form && !confirm("Leave without saving this sermon?")) { history.pushState({ esvDoc:1 }, ""); docEntry = true; return; }
+  if (form) form.remove();
+  ui.editing = null; ui.fresh = null; ui.sPane = "list";
+  render(); scrollTo(0, 0);
+});
+let swipe = null;
+document.addEventListener("touchstart", ev => {
+  const t = ev.touches[0];
+  swipe = ev.touches.length === 1 && ui.view === "sermons" && ui.sPane === "doc" && phone()
+    && ev.target.closest(".sview") && !ev.target.closest("#sform") ? { x:t.clientX, y:t.clientY } : null;
+}, { passive:true });
+document.addEventListener("touchend", ev => {
+  if (!swipe) return;
+  const t = ev.changedTouches[0], dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+  swipe = null;
+  if (Math.abs(dx) > 70 && Math.abs(dy) < Math.abs(dx) * 0.5) backToList();
+}, { passive:true });
 function readSermonForm(s) {
   const v = id => document.getElementById(id).value.trim();
   return { ...s, date:v("f-date"), series:v("f-series"), title:v("f-title"), pastor:v("f-pastor"), details:v("f-details"), verses:v("f-verses"), summary:v("f-summary"),
@@ -643,7 +682,7 @@ document.addEventListener("click", ev => {
     case "all": ui.all = v === "1"; remember(); return render();
     case "kind": ui.kind = v; return render();
     case "sermons": ev.preventDefault(); return ui.view === "sermons" ? openSection(ui.g, ui.sel) : go("sermons", { sPane:"list" });
-    case "slist": ui.sPane = "list"; render(); return scrollTo(0, 0);
+    case "slist": return backToList();
     case "opensermon": ev.preventDefault(); {
       // opening a sermon (from a passage, or the list) unfolds its series
       const m = (DATA?.sermons || []).find(x => x.id === id);
