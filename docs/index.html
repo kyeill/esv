@@ -601,9 +601,23 @@ function render() {
   if (document.getElementById("n-text")) ui.draft = ui.view === "section" ? document.getElementById("n-text").value : ui.draft;
   if (document.getElementById("sform")) return;          // never wipe a sermon being edited; it redraws on Save or Cancel
   $head.innerHTML = vHead();
-  $main.innerHTML = ui.view === "sermons" ? vSermons() : vSection();
+  drawMain(ui.view === "sermons" ? vSermons() : vSection());
   if (keep && document.getElementById(keep)) document.getElementById(keep).focus();
   docHistory();
+}
+
+/* Redraw the page body without moving the sermon list: clicking a sermon or a
+   series partway down keeps the list where it was (his call, 2026-11-16).
+   Arriving from the Reading tab, the list scrolls to the open sermon. */
+function drawMain(html) {
+  const old = document.querySelector(".slist"), top = old ? old.scrollTop : null;
+  $main.innerHTML = html;
+  const list = document.querySelector(".slist");
+  if (!list) return;
+  if (top !== null) { list.scrollTop = top; return; }
+  const sel = list.querySelector(".sitem.sel");
+  if (sel && list.scrollHeight > list.clientHeight)
+    list.scrollTop += sel.getBoundingClientRect().top - list.getBoundingClientRect().top - list.clientHeight / 3;
 }
 
 /* Phone: an open sermon gets its own history entry, so the phone's back
@@ -708,7 +722,7 @@ document.addEventListener("click", ev => {
       const s = { id:newId("s"), date:today(), series:"", title:"", pastor:"", details:"", verses, summary:"", sections:[] };
       return go("sermons", { ss:s.id, sPane:"doc" }) && (ui.editing = s, ui.fresh = s.id, render());
     }
-    case "editsermon": { const s = DATA.sermons.find(x => x.id === ui.ss) || sermonGroups().flat()[0]; ui.editing = { ...s }; ui.fresh = null; $head.innerHTML = vHead(); $main.innerHTML = vSermons(); return; }
+    case "editsermon": { const s = DATA.sermons.find(x => x.id === ui.ss) || sermonGroups().flat()[0]; ui.editing = { ...s }; ui.fresh = null; $head.innerHTML = vHead(); drawMain(vSermons()); return; }
     case "addsec": { const box = document.getElementById("f-secs"); box.insertAdjacentHTML("beforeend", secEdit(box.children.length + 1)); return; }
     case "dropsec": el.closest(".secedit").remove(); return;
     case "cancelsermon": { const back = ui.fresh === ui.editing?.id ? null : ui.editing?.id; ui.editing = null; ui.fresh = null; ui.ss = back; ui.sPane = back ? "doc" : "list"; document.getElementById("sform").remove(); return render(); }
